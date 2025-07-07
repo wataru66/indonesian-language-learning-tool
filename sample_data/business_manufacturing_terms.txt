@@ -1,0 +1,172 @@
+インドネシア語ビジネス・製造業専門用語サンプル
+
+=== 製造業基本用語 (Istilah Dasar Manufaktur) ===
+Pabrik. 工場。
+Produksi. 生産。
+Kualitas. 品質。
+Kontrol kualitas. 品質管理。
+Inspeksi. 検査。
+Produk. 製品。
+Barang. 商品。
+Bahan baku. 原材料。
+Mesin. 機械。
+Peralatan. 設備。
+Operator. オペレーター。
+Teknisi. 技術者。
+Supervisor. 監督者。
+Manajer. マネージャー。
+Tim. チーム。
+Shift. シフト。
+Target. 目標。
+Hasil. 結果。
+Proses. プロセス。
+Sistem. システム。
+
+=== 安全管理 (Keselamatan Kerja) ===
+Keselamatan kerja. 労働安全。
+Keselamatan pertama. 安全第一。
+Helm keselamatan. 安全ヘルメット。
+Kacamata pelindung. 保護メガネ。
+Sarung tangan. 手袋。
+Sepatu keselamatan. 安全靴。
+Rompi keselamatan. 安全ベスト。
+Alat pelindung diri. 個人保護具。
+Bahaya. 危険。
+Hati-hati. 注意。
+Dilarang masuk. 立入禁止。
+Area berbahaya. 危険エリア。
+Prosedur keselamatan. 安全手順。
+Pelatihan keselamatan. 安全訓練。
+Kecelakaan kerja. 労働災害。
+Pertolongan pertama. 応急手当。
+Pintu darurat. 非常口。
+Alarm kebakaran. 火災警報。
+Pemadam kebakaran. 消火器。
+Evakuasi. 避難。
+
+=== 品質管理 (Kontrol Kualitas) ===
+Standar kualitas. 品質基準。
+Pemeriksaan kualitas. 品質検査。
+Tes kualitas. 品質テスト。
+Sertifikat kualitas. 品質証明書。
+Defek. 欠陥。
+Cacat produk. 製品不良。
+Produk rusak. 不良品。
+Produk bagus. 良品。
+Perbaikan. 修理。
+Rework. 手直し。
+Reject. 拒否品。
+Lolos tes. 検査合格。
+Gagal tes. 検査不合格。
+Spesifikasi. 仕様。
+Toleransi. 許容差。
+Presisi. 精度。
+Akurasi. 正確性。
+Pengukuran. 測定。
+Kalibrasi. 校正。
+Dokumentasi. 文書化。
+
+=== 生産管理 (Manajemen Produksi) ===
+Perencanaan produksi. 生産計画。
+Jadwal produksi. 生産スケジュール。
+Kapasitas produksi. 生産能力。
+Efisiensi produksi. 生産効率。
+Produktivitas. 生産性。
+Output. 生産量。
+Input. 投入量。
+Throughput. スループット。
+Lead time. リードタイム。
+Delivery. 納期。
+Just in time. ジャストインタイム。
+Inventory. 在庫。
+Stock. ストック。
+Warehouse. 倉庫。
+Pengiriman. 出荷。
+Logistik. 物流。
+Supply chain. サプライチェーン。
+Vendor. ベンダー。
+Supplier. サプライヤー。
+Customer. 顧客。
+
+=== 会議・コミュニケーション (Rapat dan Komunikasi) ===
+Rapat. 会議。
+Diskusi. 議論。
+Presentasi. プレゼンテーション。
+Laporan. 報告書。
+Data. データ。
+Grafik. グラフ。
+Analisis. 分析。
+Evaluasi. 評価。
+Rekomendasi. 推奨。
+Keputusan. 決定。
+Agenda. 議題。
+Notulen. 議事録。
+Tindak lanjut. フォローアップ。
+Koordinasi. 調整。
+Komunikasi. コミュニケーション。
+Informasi. 情報。
+Instruksi. 指示。
+Konfirmasi. 確認。
+Update. 更新。
+Progress. 進捗。
+
+=== 技術用語 (Istilah Teknis) ===
+Teknologi. 技術。
+Inovasi. 革新。
+Otomasi. 自動化。
+Robotik. ロボット工学。
+Sensor. センサー。
+Kontrol. 制御。
+Pemrograman. プログラミング。
+Software. ソフトウェア。
+Hardware. ハードウェア。
+Database. データベース。
+Sistem informasi. 情報システム。
+Jaringan. ネットワーク。
+Internet. インターネット。
+Cloud computing. クラウドコンピューティング。
+Artificial intelligence. 人工知能。
+Machine learning. 機械学習。
+Big data. ビッグデータ。
+Digitalisasi. デジタル化。
+Transformasi digital. デジタル変革。
+Industri 4.0. インダストリー4.0。
+
+=== 環境・持続可能性 (Lingkungan dan Keberlanjutan) ===
+Lingkungan. 環境。
+Keberlanjutan. 持続可能性。
+Ramah lingkungan. 環境に優しい。
+Daur ulang. リサイクル。
+Limbah. 廃棄物。
+Pengurangan limbah. 廃棄物削減。
+Efisiensi energi. エネルギー効率。
+Energi terbarukan. 再生可能エネルギー。
+Emisi. 排出。
+Pengurangan emisi. 排出削減。
+Sertifikasi lingkungan. 環境認証。
+Audit lingkungan. 環境監査。
+Compliance. コンプライアンス。
+Regulasi. 規制。
+Standar lingkungan. 環境基準。
+
+=== 改善活動 (Kegiatan Perbaikan) ===
+Kaizen. 改善。
+Perbaikan berkelanjutan. 継続的改善。
+5S. 5S（整理・整頓・清掃・清潔・躾）。
+Lean manufacturing. リーン製造。
+Six Sigma. シックスシグマ。
+Total Quality Management. 総合品質管理。
+Best practice. ベストプラクティス。
+Benchmarking. ベンチマーキング。
+Standarisasi. 標準化。
+Optimasi. 最適化。
+Efektivitas. 効果性。
+Efisiensi. 効率性。
+Performance. パフォーマンス。
+KPI (Key Performance Indicator). 重要業績評価指標。
+Metrik. メトリック。
+Pengukuran kinerja. 業績測定。
+Evaluasi kinerja. 業績評価。
+Target pencapaian. 達成目標。
+Milestone. マイルストーン。
+Review. レビュー。

@@ -1,0 +1,116 @@
+インドネシア語職場会話サンプル
+
+=== 朝の挨拶・始業 (Salam Pagi dan Memulai Kerja) ===
+
+場面：朝、工場に出勤した時
+A: Selamat pagi, Pak Tanaka. おはようございます、田中さん。
+B: Selamat pagi, Sari. Apa kabar hari ini? おはようございます、サリさん。今日の調子はどうですか？
+A: Baik-baik saja. Terima kasih. 元気です。ありがとうございます。
+B: Bagus. Mari kita mulai kerja hari ini. よかった。今日の仕事を始めましょう。
+
+場面：シフト交代時
+A: Selamat siang. Bagaimana shift pagi tadi? こんにちは。朝のシフトはどうでしたか？
+B: Lancar. Tidak ada masalah besar. 順調でした。大きな問題はありませんでした。
+A: Syukurlah. Ada yang perlu saya ketahui? よかった。私が知っておくべきことはありますか？
+B: Mesin nomor 2 sedikit lambat. Mungkin perlu dicek. 2番の機械が少し遅いです。チェックが必要かもしれません。
+
+=== 作業指示・確認 (Instruksi Kerja dan Konfirmasi) ===
+
+場面：作業指示を受ける時
+上司: Tolong cek kualitas produk di line B. Bライン製品の品質をチェックしてください。
+部下: Baik, Pak. Apa yang harus saya perhatikan? はい。何に注意すべきでしょうか？
+上司: Pastikan ukurannya sesuai spesifikasi. サイズが仕様通りか確認してください。
+部下: Mengerti. Saya akan laporkan hasilnya nanti. 分かりました。結果は後で報告します。
+
+場面：問題を報告する時
+A: Maaf mengganggu. Ada masalah di mesin cutting. すみません、邪魔して。カッティング機械に問題があります。
+B: Masalah apa? Mesin tidak bisa jalan? どんな問題ですか？機械が動きませんか？
+A: Suara mesin aneh dan hasil potongan tidak rata. 機械の音が変で、切断結果が不均等です。
+B: Baik, saya akan panggil teknisi. Jangan operasikan dulu. わかりました、技術者を呼びます。まだ操作しないでください。
+
+=== 品質管理・検査 (Kontrol Kualitas dan Inspeksi) ===
+
+場面：品質検査中
+検査員: Saya perlu inspeksi produk ini. Boleh saya lihat? この製品を検査する必要があります。見せてもらえますか？
+作業員: Tentu saja. Ini batch terakhir hari ini. もちろんです。これは今日の最後のバッチです。
+検査員: Kualitasnya bagus. Semua lolos standar. 品質は良いですね。すべて基準をクリアしています。
+作業員: Terima kasih. Apa ada yang perlu diperbaiki? ありがとうございます。改善すべき点はありますか？
+
+場面：不良品を発見した時
+A: Ada produk cacat di sini. Apa yang harus saya lakukan? ここに不良品があります。どうすればいいですか？
+B: Pisahkan dari yang bagus dan beri label "reject". 良品と分けて「reject」のラベルを貼ってください。
+A: Baik. Apa penyebab cacatnya? はい。不良の原因は何ですか？
+B: Mungkin setting mesin perlu disesuaikan. 機械の設定を調整する必要があるかもしれません。
+
+=== 安全管理 (Keselamatan Kerja) ===
+
+場面：安全注意を促す時
+A: Hati-hati, lantai basah di sana. あそこの床が濡れているので注意してください。
+B: Terima kasih sudah mengingatkan. 注意してくれてありがとうございます。
+A: Selalu pakai sepatu safety ya. 常に安全靴を履いてくださいね。
+B: Tentu saja. Keselamatan nomor satu. もちろんです。安全が第一です。
+
+場面：事故報告時
+A: Ada kecelakaan kecil di area welding. 溶接エリアで小さな事故がありました。
+B: Serius? Ada yang luka? 深刻ですか？怪我人はいますか？
+A: Tidak serius. Hanya tangan tergores sedikit. 深刻ではありません。手に小さな擦り傷があるだけです。
+B: Tetap harus dilaporkan dan diberi P3K. それでも報告して応急手当をしなければなりません。
+
+=== 会議・ミーティング (Rapat dan Meeting) ===
+
+場面：会議開始時
+司会: Selamat pagi semua. Mari kita mulai rapat hari ini. 皆さんおはようございます。今日の会議を始めましょう。
+参加者: Selamat pagi. おはようございます。
+司会: Agenda pertama adalah laporan produksi minggu lalu. 最初の議題は先週の生産報告です。
+担当者: Baik, saya akan presentasikan datanya. はい、データを発表します。
+
+場面：意見を求められた時
+A: Bagaimana pendapat Anda tentang proposal ini? この提案についてどう思われますか？
+B: Menurut saya idenya bagus, tapi perlu dipertimbangkan biayanya. アイデアは良いと思いますが、コストを考慮する必要があります。
+A: Setuju. Apa ada alternatif yang lebih ekonomis? 同感です。もっと経済的な代替案はありますか？
+B: Mungkin kita bisa implementasi secara bertahap. 段階的に実装することもできるかもしれません。
+
+=== 協力・依頼 (Kerjasama dan Permintaan) ===
+
+場面：手伝いを頼む時
+A: Bisa tolong bantu saya angkat ini? これを持ち上げるのを手伝ってもらえますか？
+B: Tentu saja. Hati-hati, ini berat. もちろんです。注意して、これは重いです。
+A: Terima kasih banyak atas bantuannya. 手伝ってくれて本当にありがとうございます。
+B: Sama-sama. Kapan-kapan saya juga minta tolong ya. どういたしまして。今度は私もお願いするかもしれません。
+
+場面：情報を求める時
+A: Excuse me, tahu tidak jadwal training besok? すみません、明日のトレーニングのスケジュールを知っていますか？
+B: Setahu saya mulai jam 9 pagi di ruang training. 私の知る限り、朝9時からトレーニング室で始まります。
+A: Terima kasih informasinya. 情報をありがとうございます。
+B: Sama-sama. Jangan lupa bawa notebook. どういたしまして。ノートブックを持参するのを忘れないでください。
+
+=== 終業・お疲れ様 (Selesai Kerja dan Salam Perpisahan) ===
+
+場面：仕事終了時
+A: Kerja hari ini sudah selesai. Terima kasih atas kerja kerasnya. 今日の仕事は終了です。お疲れ様でした。
+B: Sama-sama. Besok kita lanjutkan lagi. お疲れ様でした。明日また続けましょう。
+A: Hati-hati di jalan ya. 道中気をつけてくださいね。
+B: Terima kasih. Sampai jumpa besok. ありがとうございます。また明日お会いしましょう。
+
+場面：残業が必要な時
+A: Maaf, ada urgent order. Bisa lembur 2 jam? すみません、緊急オーダーがあります。2時間残業できますか？
+B: Tidak masalah. Sampai jam berapa? 問題ありません。何時までですか？
+A: Sampai jam 8 malam. Target 200 unit lagi. 夜8時まで。あと200ユニットが目標です。
+B: Baik, saya akan usahakan. はい、頑張ります。
+
+=== よく使われる職場表現 (Ungkapan Umum di Tempat Kerja) ===
+Bagaimana progress-nya? 進捗はどうですか？
+Sudah hampir selesai. もうすぐ完成です。
+Masih ada kendala sedikit. まだ少し問題があります。
+Perlu bantuan tambahan. 追加の助けが必要です。
+Sudah sesuai prosedur. 手順通りに完了しました。
+Mohon dicek ulang. 再確認をお願いします。
+Akan saya koordinasikan. 調整いたします。
+Saya akan follow up. フォローアップします。
+Deadline kapan? 締切はいつですか？
+Prioritas tinggi. 優先度が高いです。
+Tidak ada masalah. 問題ありません。
+Perlu diskusi lebih lanjut. さらなる議論が必要です。
+Sudah clear semua. すべてクリアです。
+Mohon konfirmasi. 確認をお願いします。
+Terima kasih atas kerja samanya. ご協力ありがとうございます。

@@ -1,0 +1,164 @@
+インドネシア語基本日常会話サンプル
+
+=== 挨拶 (Salam) ===
+Selamat pagi. おはようございます。
+Selamat siang. こんにちは。（10時〜15時）
+Selamat sore. こんにちは。（15時〜18時）
+Selamat malam. こんばんは。
+Apa kabar? お元気ですか？
+Kabar baik. 元気です。
+Sampai jumpa. さようなら。
+Sampai besok. また明日。
+Selamat tinggal. さようなら。（別れの時）
+Terima kasih. ありがとうございます。
+Sama-sama. どういたしまして。
+Maaf. すみません。
+Permisi. すみません。（通るとき）
+Tidak apa-apa. 大丈夫です。
+
+=== 基本表現 (Ungkapan Dasar) ===
+Ya. はい。
+Tidak. いいえ。
+Bagus. いいですね。
+Buruk. 悪いです。
+Besar. 大きい。
+Kecil. 小さい。
+Panjang. 長い。
+Pendek. 短い。
+Tinggi. 高い。
+Rendah. 低い。
+Baru. 新しい。
+Lama. 古い。
+Baik. 良い。
+Jelek. 悪い。
+Mudah. 簡単。
+Sulit. 難しい。
+Cepat. 速い。
+Lambat. 遅い。
+
+=== 質問表現 (Pertanyaan) ===
+Apa? 何？
+Siapa? 誰？
+Kapan? いつ？
+Di mana? どこで？
+Mengapa? なぜ？
+Bagaimana? どうやって？
+Berapa? いくつ？
+Yang mana? どれ？
+Apa ini? これは何ですか？
+Siapa itu? あの人は誰ですか？
+Kapan kita berangkat? いつ出発しますか？
+Di mana toilet? トイレはどこですか？
+Mengapa terlambat? なぜ遅れているのですか？
+Bagaimana caranya? どうやってするのですか？
+Berapa harganya? いくらですか？
+
+=== 時間 (Waktu) ===
+Hari ini. 今日。
+Kemarin. 昨日。
+Besok. 明日。
+Sekarang. 今。
+Nanti. 後で。
+Pagi. 朝。
+Siang. 昼。
+Sore. 夕方。
+Malam. 夜。
+Jam berapa? 何時ですか？
+Jam dua. 2時です。
+Setengah tiga. 2時半です。
+Seperempat empat. 3時15分です。
+
+=== 食事 (Makanan) ===
+Makan. 食べる。
+Minum. 飲む。
+Nasi. ご飯。
+Roti. パン。
+Daging. 肉。
+Ikan. 魚。
+Sayur. 野菜。
+Buah. 果物。
+Air. 水。
+Teh. お茶。
+Kopi. コーヒー。
+Susu. 牛乳。
+Gula. 砂糖。
+Garam. 塩。
+Pedas. 辛い。
+Manis. 甘い。
+Asin. 塩辛い。
+Enak. おいしい。
+Tidak enak. まずい。
+
+=== 移動 (Transportasi) ===
+Pergi. 行く。
+Datang. 来る。
+Jalan. 歩く。
+Lari. 走る。
+Naik. 乗る。
+Turun. 降りる。
+Mobil. 車。
+Motor. バイク。
+Bus. バス。
+Kereta. 電車。
+Pesawat. 飛行機。
+Kapal. 船。
+Stasiun. 駅。
+Bandara. 空港。
+Pelabuhan. 港。
+
+=== 方向 (Arah) ===
+Kiri. 左。
+Kanan. 右。
+Lurus. まっすぐ。
+Depan. 前。
+Belakang. 後ろ。
+Atas. 上。
+Bawah. 下。
+Dalam. 中。
+Luar. 外。
+Dekat. 近い。
+Jauh. 遠い。
+
+=== 家族 (Keluarga) ===
+Keluarga. 家族。
+Ayah. 父。
+Ibu. 母。
+Anak. 子供。
+Kakak. 兄・姉。
+Adik. 弟・妹。
+Suami. 夫。
+Istri. 妻。
+Kakek. 祖父。
+Nenek. 祖母。
+Paman. おじ。
+Bibi. おば。
+Sepupu. いとこ。
+
+=== 数字 (Angka) ===
+Satu. 1。
+Dua. 2。
+Tiga. 3。
+Empat. 4。
+Lima. 5。
+Enam. 6。
+Tujuh. 7。
+Delapan. 8。
+Sembilan. 9。
+Sepuluh. 10。
+Sebelas. 11。
+Dua belas. 12。
+Dua puluh. 20。
+Seratus. 100。
+Seribu. 1000。
+
+=== 感情 (Perasaan) ===
+Senang. 嬉しい。
+Sedih. 悲しい。
+Marah. 怒っている。
+Takut. 怖い。
+Kaget. びっくりした。
+Lelah. 疲れた。
+Bosan. 退屈。
+Khawatir. 心配。
+Lega. ほっとした。
+Kecewa. がっかりした。

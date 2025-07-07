@@ -1,0 +1,83 @@
+インドネシア語会議議事録サンプル
+
+=== 生産部門定例会議議事録 ===
+Tanggal: 8 Januari 2025
+Waktu: 09:00 - 10:30
+Tempat: Ruang Rapat Produksi
+Peserta: Tim Produksi, Manajer Kualitas, Supervisor Shift
+
+Pembukaan:
+Selamat pagi semuanya. Mari kita mulai rapat produksi mingguan hari ini. Hari ini kita akan membahas hasil produksi minggu lalu dan target minggu depan.
+
+Agenda 1: Laporan Produksi Minggu Lalu
+Manajer Produksi melaporkan bahwa target produksi minggu lalu tercapai 95%. Total produksi mencapai 4.750 unit dari target 5.000 unit. Ada beberapa kendala di mesin produksi yang menyebabkan penurunan output.
+
+Teknisi menjelaskan bahwa mesin nomor 3 mengalami kerusakan pada hari Rabu dan perlu perbaikan selama 4 jam. Hal ini mempengaruhi jadwal produksi dan menyebabkan sedikit keterlambatan.
+
+Supervisor Shift A melaporkan bahwa tim bekerja dengan baik dan tidak ada masalah keselamatan kerja selama minggu lalu. Semua pekerja menggunakan alat pelindung diri dengan benar.
+
+Agenda 2: Kontrol Kualitas
+Manajer Kualitas menyampaikan bahwa tingkat defek produk minggu lalu adalah 2,3%, masih dalam batas toleransi standar perusahaan yaitu 3%. Namun, ada peningkatan dibandingkan minggu sebelumnya yang hanya 1,8%.
+
+Tim QC menemukan beberapa produk cacat pada line produksi B. Masalah utama adalah ketidaksesuaian ukuran yang disebabkan oleh kalibrasi mesin yang kurang tepat. Sudah dilakukan penyesuaian dan kalibrasi ulang.
+
+Inspeksi kualitas bahan baku dari supplier baru menunjukkan hasil yang memuaskan. Semua material lolos tes dan sesuai dengan spesifikasi yang diminta.
+
+Agenda 3: Keselamatan Kerja
+Tidak ada kecelakaan kerja yang dilaporkan minggu lalu. Pelatihan keselamatan untuk karyawan baru telah selesai dilaksanakan. Semua peserta lulus tes keselamatan dan siap bekerja di lantai produksi.
+
+Pemeriksaan alat pemadam kebakaran telah dilakukan dan semua dalam kondisi baik. Jalur evakuasi darurat sudah diperiksa dan tidak ada hambatan.
+
+Tim safety mengingatkan semua pekerja untuk selalu menggunakan helm keselamatan dan sepatu safety saat berada di area produksi. Akan ada inspeksi mendadak minggu depan untuk memastikan compliance.
+
+Agenda 4: Target dan Rencana Minggu Depan
+Target produksi minggu depan ditetapkan 5.200 unit, meningkat dari minggu ini. Untuk mencapai target tersebut, akan ditambah jam lembur 2 jam per hari untuk shift pagi.
+
+Maintenance preventif akan dilakukan pada mesin nomor 1 dan 2 pada hari Sabtu. Diperkirakan akan memakan waktu 6 jam dan tidak akan mengganggu jadwal produksi reguler.
+
+Pelatihan operator baru untuk mesin cutting akan dimulai hari Senin. Diharapkan setelah pelatihan, kapasitas produksi line C dapat ditingkatkan.
+
+Agenda 5: Masalah dan Solusi
+Supervisor melaporkan bahwa ada kekurangan stok bahan baku plastik untuk produksi minggu depan. Tim procurement sudah dihubungi untuk melakukan pemesanan urgent.
+
+Masalah delay pengiriman dari supplier lokal masih terjadi. Akan dilakukan evaluasi supplier dan pencarian alternatif supplier untuk mengurangi risiko keterlambatan.
+
+Sistem inventory baru akan diimplementasikan bulan depan untuk meningkatkan akurasi tracking stok dan mengurangi shortage material.
+
+Agenda 6: Improvement dan Inovasi
+Tim kaizen melaporkan hasil implementasi 5S di area warehouse sudah menunjukkan perbaikan. Waktu pencarian barang berkurang 30% dan area kerja lebih tertata rapi.
+
+Proposal penggunaan sistem barcode untuk tracking produk sedang dalam tahap evaluasi. Diperkirakan akan mengurangi human error dan meningkatkan efisiensi.
+
+Rencana digitalisasi process documentation akan dimulai bulan depan dengan bantuan tim IT. Semua SOP akan dikonversi ke format digital.
+
+Penutupan:
+Terima kasih atas partisipasi semua pihak dalam rapat hari ini. Mohon semua action item ditindaklanjuti sesuai timeline yang sudah ditentukan. Rapat minggu depan akan dilaksanakan pada hari yang sama, jam 09:00.
+
+Action Items:
+1. Tim Maintenance: Lakukan maintenance preventif mesin 1 dan 2 hari Sabtu
+2. Tim Procurement: Pastikan stok bahan baku plastik tersedia untuk produksi minggu depan
+3. Tim QC: Monitor defect rate dan lakukan kalibrasi mesin secara berkala
+4. Tim Safety: Lakukan inspeksi mendadak compliance APD minggu depan
+5. Tim Kaizen: Lanjutkan implementasi 5S di area produksi
+
+Waktu selesai: 10:30
+Notulen disusun oleh: Sekretaris Rapat
+Ditandatangani oleh: Manajer Produksi
+
+=== Vocabulary yang Muncul dalam Teks ===
+Rapat - 会議
+Target - 目標
+Produksi - 生産
+Kualitas - 品質
+Keselamatan kerja - 労働安全
+Mesin - 機械
+Defek - 欠陥
+Maintenance - メンテナンス
+Supplier - サプライヤー
+Improvement - 改善
+Tim - チーム
+Schedule - スケジュール
+Performance - パフォーマンス
+Efficiency - 効率性
+Standard - 基準
