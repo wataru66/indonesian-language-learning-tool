@@ -142,6 +142,40 @@ def final_working_app(page: ft.Page):
                 status_text.value = f"エラー: {str(ex)}"
                 page.update()
         
+        def pick_files(e):
+            print("Opening file picker...")
+            
+            def on_result(result):
+                if result and result.files:
+                    print(f"Selected {len(result.files)} files")
+                    for file in result.files:
+                        if file.path not in [f['path'] for f in selected_files]:
+                            selected_files.append({
+                                'path': file.path,
+                                'name': file.name,
+                                'size': Path(file.path).stat().st_size if Path(file.path).exists() else 0
+                            })
+                    update_file_list()
+                    status_text.value = f"{len(result.files)} 個のファイルを追加しました"
+                    page.update()
+                else:
+                    print("No files selected")
+            
+            file_picker = ft.FilePicker(on_result=on_result)
+            page.overlay.append(file_picker)
+            page.update()
+            
+            try:
+                file_picker.pick_files(
+                    dialog_title="ファイルを選択",
+                    allow_multiple=True,
+                    allowed_extensions=["txt", "docx", "pdf", "xlsx"]
+                )
+            except Exception as ex:
+                print(f"File picker error: {ex}")
+                status_text.value = f"ファイル選択エラー: {str(ex)}"
+                page.update()
+        
         def analyze_files(e):
             if not selected_files:
                 return
@@ -173,6 +207,12 @@ def final_working_app(page: ft.Page):
                 saved_count = 0
                 for stem, count in list(results['stem_frequency'].items())[:20]:  # Save top 20 stems
                     try:
+                        # Check if word already exists
+                        existing_words = db.search_words(stem)
+                        if existing_words:
+                            print(f"Word '{stem}' already exists, skipping...")
+                            continue
+                        
                         # Get Japanese translation using auto-translation
                         print(f"Translating: {stem}...")
                         japanese_translation = translator.translate(stem, 'id', 'ja')
@@ -228,6 +268,13 @@ def final_working_app(page: ft.Page):
             ft.Text("ファイル処理", size=24, weight=ft.FontWeight.BOLD),
             ft.Divider(),
             ft.Row([
+                ft.ElevatedButton(
+                    "ファイル選択",
+                    icon=ft.icons.UPLOAD_FILE,
+                    on_click=pick_files,
+                    bgcolor=ft.colors.BLUE,
+                    color=ft.colors.WHITE
+                ),
                 ft.ElevatedButton(
                     "サンプルデータ読込",
                     icon=ft.icons.FOLDER_SPECIAL,
