@@ -806,15 +806,15 @@ def final_working_app(page: ft.Page):
             
             # Show Indonesian word (question)
             card_display.content = ft.Column([
-                ft.Text("インドネシア語", size=14, color=ft.colors.GREY_600),
+                ft.Text("インドネシア語", size=14, color=ft.colors.BLUE_700),
                 ft.Container(height=20),
-                ft.Text(current_card.content, size=32, weight=ft.FontWeight.BOLD, 
-                       text_align=ft.TextAlign.CENTER),
+                ft.Text(current_card.content, size=36, weight=ft.FontWeight.BOLD, 
+                       text_align=ft.TextAlign.CENTER, color=ft.colors.BLACK),
                 ft.Container(height=30),
-                ft.Text("クリックで答えを表示", size=12, color=ft.colors.GREY_500),
+                ft.Text("クリックで答えを表示", size=12, color=ft.colors.BLUE_600),
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
             
-            card_display.bgcolor = ft.colors.BLUE_50
+            card_display.bgcolor = ft.colors.BLUE_100
             progress_text.value = f"カード {current_index + 1} / {len(current_cards)}"
             update_button_states()
             page.update()
@@ -830,23 +830,23 @@ def final_working_app(page: ft.Page):
             
             # Show Japanese translation (answer)
             card_display.content = ft.Column([
-                ft.Text("日本語", size=14, color=ft.colors.GREY_600),
+                ft.Text("日本語", size=14, color=ft.colors.GREEN_700),
                 ft.Container(height=10),
-                ft.Text(current_card.content, size=20, color=ft.colors.GREY_700),
+                ft.Text(current_card.content, size=18, color=ft.colors.BLACK, weight=ft.FontWeight.W_500),
                 ft.Container(height=20),
-                ft.Text(current_card.translation, size=28, weight=ft.FontWeight.BOLD, 
-                       text_align=ft.TextAlign.CENTER, color=ft.colors.GREEN_700),
+                ft.Text(current_card.translation, size=32, weight=ft.FontWeight.BOLD, 
+                       text_align=ft.TextAlign.CENTER, color=ft.colors.GREEN_800),
                 ft.Container(height=20),
                 # Show notes if available
                 ft.Text(
                     getattr(current_card, 'notes', '') or '',
                     size=12, 
-                    color=ft.colors.GREY_600,
+                    color=ft.colors.BLACK,
                     text_align=ft.TextAlign.CENTER
                 ) if getattr(current_card, 'notes', '') else ft.Container(),
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
             
-            card_display.bgcolor = ft.colors.GREEN_50
+            card_display.bgcolor = ft.colors.GREEN_100
             update_button_states()
             page.update()
         
