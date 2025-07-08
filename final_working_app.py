@@ -22,7 +22,7 @@ def final_working_app(page: ft.Page):
     # Basic page setup
     page.title = "インドネシア語学習支援ツール v1.0"
     page.window_width = 1200
-    page.window_height = 800
+    page.window_height = 900  # 高さを増やす
     page.padding = 20
     
     # Initialize components
@@ -80,7 +80,7 @@ def final_working_app(page: ft.Page):
     
     # Content container
     content_container = ft.Container(
-        height=600,
+        height=700,  # 高さを増やす
         padding=20,
         border=ft.border.all(1, ft.colors.GREY_300),
         border_radius=10
@@ -304,8 +304,8 @@ def final_working_app(page: ft.Page):
             ft.Container(height=10),
             ft.Text("分析結果:", size=16, weight=ft.FontWeight.BOLD),
             ft.Container(
-                content=ft.Column([results_text], scroll=ft.ScrollMode.AUTO),
-                height=250,
+                content=ft.Column([results_text], scroll=ft.ScrollMode.ALWAYS),
+                height=350,  # 高さを増やす
                 border=ft.border.all(1, ft.colors.GREY_300),
                 border_radius=5,
                 padding=10
@@ -314,7 +314,7 @@ def final_working_app(page: ft.Page):
     
     # Tab 1: Learning List
     def create_learning_list_tab():
-        list_view = ft.ListView(height=350, spacing=5)
+        list_view = ft.ListView(height=450, spacing=5)
         edit_dialog = ft.AlertDialog(
             modal=True,
             title=ft.Text("翻訳を編集"),
