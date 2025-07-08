@@ -274,6 +274,20 @@ class Database:
             return self.cursor.rowcount > 0
         finally:
             self.disconnect()
+    
+    def search_words(self, search_term: str) -> List[Word]:
+        """Search words by Indonesian text"""
+        self.connect()
+        try:
+            self.cursor.execute('''
+                SELECT * FROM words 
+                WHERE indonesian = ? OR stem = ?
+                ORDER BY frequency DESC
+            ''', (search_term, search_term))
+            rows = self.cursor.fetchall()
+            return [self._row_to_word(row) for row in rows]
+        finally:
+            self.disconnect()
             
     # CRUD operations for Phrases
     def add_phrase(self, phrase: Phrase) -> int:
