@@ -55,17 +55,30 @@ class FileTab(ft.UserControl):
                         ft.ElevatedButton(
                             text="ファイル選択",
                             icon=ft.icons.UPLOAD_FILE,
-                            on_click=self._select_files
+                            on_click=self._select_files,
+                            height=40
                         ),
                         ft.ElevatedButton(
                             text="フォルダ選択",
                             icon=ft.icons.FOLDER_OPEN,
-                            on_click=self._select_folder
+                            on_click=self._select_folder,
+                            height=40
+                        ),
+                        ft.ElevatedButton(
+                            text="サンプルデータ",
+                            icon=ft.icons.FOLDER_SPECIAL,
+                            on_click=self._load_sample_data,
+                            height=40,
+                            bgcolor=ft.colors.GREEN,
+                            color=ft.colors.WHITE
                         ),
                         ft.ElevatedButton(
                             text="クリア",
                             icon=ft.icons.CLEAR,
-                            on_click=self._clear_files
+                            on_click=self._clear_files,
+                            height=40,
+                            bgcolor=ft.colors.RED,
+                            color=ft.colors.WHITE
                         )
                     ], spacing=10),
                     ft.Container(height=10),
@@ -118,11 +131,17 @@ class FileTab(ft.UserControl):
             visible=False
         )
         
+        def test_click(e):
+            print("Analysis button clicked!")
+            self._start_analysis(e)
+        
         self.analyze_button = ft.ElevatedButton(
             text="分析開始",
             icon=ft.icons.ANALYTICS,
-            on_click=self._start_analysis,
-            disabled=True
+            on_click=test_click,
+            disabled=True,
+            bgcolor=ft.colors.BLUE,
+            color=ft.colors.WHITE
         )
         
         analysis_section = ft.Card(
@@ -178,9 +197,14 @@ class FileTab(ft.UserControl):
     
     def _select_files(self, e):
         """Select files using file picker"""
+        print("Opening file picker...")
+        
         def on_files_selected(result):
-            if result.files:
+            print(f"File picker result: {result}")
+            if result and result.files:
+                print(f"Selected {len(result.files)} files")
                 for file in result.files:
+                    print(f"Adding file: {file.name} -> {file.path}")
                     if file.path not in [f['path'] for f in self.file_list]:
                         self.file_list.append({
                             'path': file.path,
@@ -188,17 +212,23 @@ class FileTab(ft.UserControl):
                             'size': self._get_file_size(file.path)
                         })
                 self._update_file_list()
+            else:
+                print("No files selected")
         
         file_picker = ft.FilePicker(on_result=on_files_selected)
         self.page.overlay.append(file_picker)
         self.page.update()
         
         # Open file picker
-        file_picker.pick_files(
-            dialog_title="ファイルを選択",
-            allow_multiple=True,
-            allowed_extensions=self.file_processor.get_supported_extensions()
-        )
+        try:
+            file_picker.pick_files(
+                dialog_title="ファイルを選択",
+                allow_multiple=True,
+                allowed_extensions=self.file_processor.get_supported_extensions()
+            )
+        except Exception as picker_error:
+            print(f"File picker error: {picker_error}")
+            self._show_error(f"ファイル選択エラー: {str(picker_error)}")
     
     def _select_folder(self, e):
         """Select folder using directory picker"""
@@ -222,6 +252,37 @@ class FileTab(ft.UserControl):
         self.page.update()
         
         folder_picker.get_directory_path(dialog_title="フォルダを選択")
+    
+    def _load_sample_data(self, e):
+        """Load sample data files"""
+        print("Loading sample data...")
+        
+        try:
+            sample_dir = Path(__file__).parent.parent / "sample_data"
+            if not sample_dir.exists():
+                self._show_error("サンプルデータフォルダが見つかりません")
+                return
+            
+            sample_files = list(sample_dir.glob("*.txt"))
+            if not sample_files:
+                self._show_error("サンプルデータファイルが見つかりません")
+                return
+            
+            for file_path in sample_files:
+                if str(file_path) not in [f['path'] for f in self.file_list]:
+                    self.file_list.append({
+                        'path': str(file_path),
+                        'name': file_path.name,
+                        'size': self._get_file_size(str(file_path))
+                    })
+                    print(f"Added sample file: {file_path.name}")
+            
+            self._update_file_list()
+            print(f"Loaded {len(sample_files)} sample files")
+            
+        except Exception as ex:
+            print(f"Sample data loading error: {ex}")
+            self._show_error(f"サンプルデータ読み込みエラー: {str(ex)}")
     
     def _clear_files(self, e):
         """Clear all selected files"""

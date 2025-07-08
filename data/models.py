@@ -42,6 +42,7 @@ class Word:
     frequency: int = 0
     priority: float = 0.0
     difficulty: int = 1  # 1-5
+    notes: str = ""  # 備考・注意事項
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     

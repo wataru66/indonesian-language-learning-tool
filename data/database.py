@@ -62,10 +62,20 @@ class Database:
                 frequency INTEGER DEFAULT 0,
                 priority REAL DEFAULT 0.0,
                 difficulty INTEGER DEFAULT 1,
+                notes TEXT DEFAULT '',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
+        
+        # Add notes column if it doesn't exist (migration)
+        try:
+            self.cursor.execute("ALTER TABLE words ADD COLUMN notes TEXT DEFAULT ''")
+            self.connection.commit()
+            print("Added notes column to words table")
+        except sqlite3.OperationalError:
+            # Column already exists
+            pass
         
         # Phrases table
         self.cursor.execute('''
@@ -198,11 +208,11 @@ class Database:
         try:
             self.cursor.execute('''
                 INSERT INTO words (indonesian, japanese, stem, category, 
-                                 frequency, priority, difficulty)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                                 frequency, priority, difficulty, notes)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ''', (word.indonesian, word.japanese, word.stem, 
                   word.category.value, word.frequency, 
-                  word.calculate_priority(), word.difficulty))
+                  word.calculate_priority(), word.difficulty, word.notes))
             
             word_id = self.cursor.lastrowid
             self.connection.commit()
@@ -245,12 +255,12 @@ class Database:
             self.cursor.execute('''
                 UPDATE words 
                 SET indonesian = ?, japanese = ?, stem = ?, category = ?,
-                    frequency = ?, priority = ?, difficulty = ?,
+                    frequency = ?, priority = ?, difficulty = ?, notes = ?,
                     updated_at = CURRENT_TIMESTAMP
                 WHERE id = ?
             ''', (word.indonesian, word.japanese, word.stem,
                   word.category.value, word.frequency, word.priority,
-                  word.difficulty, word.id))
+                  word.difficulty, word.notes, word.id))
             
             self.connection.commit()
             return self.cursor.rowcount > 0
@@ -469,6 +479,7 @@ class Database:
             frequency=row['frequency'],
             priority=row['priority'],
             difficulty=row['difficulty'],
+            notes=row.get('notes', ''),  # Handle existing rows without notes
             created_at=row['created_at'],
             updated_at=row['updated_at']
         )

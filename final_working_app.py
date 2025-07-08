@@ -224,7 +224,8 @@ def final_working_app(page: ft.Page):
                             stem=stem,
                             category=Category.GENERAL,
                             difficulty=3,
-                            frequency=count
+                            frequency=count,
+                            notes=""
                         )
                         # Add word to database
                         db.add_word(word)
@@ -340,6 +341,12 @@ def final_working_app(page: ft.Page):
                             item.translation == item.content
                         )
                         
+                        # Create subtitle with notes indicator
+                        subtitle_text = f"翻訳: {item.translation} | 優先度: {item.learning_priority:.1f}"
+                        item_notes = getattr(item, 'notes', '')
+                        if item_notes:
+                            subtitle_text += f" 📝"
+                        
                         list_item = ft.ListTile(
                             leading=ft.Icon(
                                 ft.icons.STAR if item.learning_priority > 5 else ft.icons.CIRCLE,
@@ -347,14 +354,14 @@ def final_working_app(page: ft.Page):
                             ),
                             title=ft.Text(item.content),
                             subtitle=ft.Text(
-                                f"翻訳: {item.translation} | 優先度: {item.learning_priority:.1f}",
+                                subtitle_text,
                                 color=ft.colors.RED if needs_translation else None
                             ),
                             trailing=ft.Row([
                                 ft.Text(f"頻度: {item.frequency}"),
                                 ft.IconButton(
                                     icon=ft.icons.EDIT,
-                                    tooltip="翻訳を編集",
+                                    tooltip="翻訳・備考を編集",
                                     on_click=lambda e, word=item: edit_translation(word)
                                 )
                             ], tight=True)
@@ -385,9 +392,20 @@ def final_working_app(page: ft.Page):
                 autofocus=True
             )
             
+            notes_field = ft.TextField(
+                label="備考・注意事項",
+                value=getattr(word_item, 'notes', ''),
+                width=300,
+                multiline=True,
+                min_lines=2,
+                max_lines=4
+            )
+            
             def save_translation(e):
                 try:
                     new_translation = japanese_field.value.strip()
+                    new_notes = notes_field.value.strip()
+                    
                     if not new_translation:
                         japanese_field.error_text = "翻訳を入力してください"
                         page.update()
@@ -400,7 +418,7 @@ def final_working_app(page: ft.Page):
                     words = db.search_words(word_item.content)
                     if words:
                         word = words[0]
-                        # Update the word's translation
+                        # Update the word's translation and notes
                         updated_word = Word(
                             id=word.id,
                             indonesian=word.indonesian,
@@ -408,10 +426,13 @@ def final_working_app(page: ft.Page):
                             stem=word.stem,
                             category=word.category,
                             difficulty=word.difficulty,
-                            frequency=word.frequency
+                            frequency=word.frequency,
+                            notes=new_notes
                         )
                         db.update_word(updated_word)
-                        print(f"Updated translation: {word_item.content} -> {new_translation}")
+                        print(f"Updated: {word_item.content} -> {new_translation}")
+                        if new_notes:
+                            print(f"Notes: {new_notes}")
                         
                         # Close dialog and refresh list
                         page.dialog.open = False
@@ -436,7 +457,9 @@ def final_working_app(page: ft.Page):
                 ft.Container(height=10),
                 japanese_field,
                 ft.Container(height=10),
-                ft.Text("※ 専門用語や不適切な自動翻訳を手動で修正できます", 
+                notes_field,
+                ft.Container(height=10),
+                ft.Text("※ 専門用語の翻訳修正と注意事項を記録できます", 
                        size=12, color=ft.colors.GREY_600)
             ], tight=True)
             
@@ -525,7 +548,7 @@ def final_working_app(page: ft.Page):
                 with open(csv_path, 'w', newline='', encoding='utf-8-sig') as csvfile:
                     writer = csv.writer(csvfile)
                     # Write header
-                    writer.writerow(['インドネシア語', '日本語翻訳', '語幹', '頻度', '優先度', '修正要否'])
+                    writer.writerow(['インドネシア語', '日本語翻訳', '備考・注意事項', '語幹', '頻度', '優先度', '修正要否'])
                     
                     # Write data
                     for item in items:
@@ -537,6 +560,7 @@ def final_working_app(page: ft.Page):
                         writer.writerow([
                             item.content,
                             item.translation,
+                            getattr(item, 'notes', ''),  # 備考欄
                             item.stem if hasattr(item, 'stem') else '',
                             item.frequency,
                             f"{item.learning_priority:.1f}",
@@ -586,6 +610,7 @@ def final_working_app(page: ft.Page):
                                 
                                 indonesian_word = row[0].strip()
                                 japanese_translation = row[1].strip()
+                                notes = row[2].strip() if len(row) > 2 else ''  # 備考欄
                                 
                                 if not indonesian_word or not japanese_translation:
                                     continue
@@ -604,11 +629,14 @@ def final_working_app(page: ft.Page):
                                             stem=word.stem,
                                             category=word.category,
                                             difficulty=word.difficulty,
-                                            frequency=word.frequency
+                                            frequency=word.frequency,
+                                            notes=notes
                                         )
                                         db.update_word(updated_word)
                                         updated_count += 1
                                         print(f"Updated: {indonesian_word} -> {japanese_translation}")
+                                        if notes:
+                                            print(f"  Notes: {notes}")
                                     else:
                                         print(f"Word not found: {indonesian_word}")
                                         error_count += 1

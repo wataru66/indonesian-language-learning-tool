@@ -1,0 +1,22 @@
+# Translation API Keys Configuration
+# Remove the # to uncomment and add your keys
+
+# Google Cloud Translation API Key
+# google_api_key=YOUR_GOOGLE_API_KEY_HERE
+
+# DeepL API Key  
+# deepl_api_key=YOUR_DEEPL_API_KEY_HERE
+
+# How to get API Keys:
+# 
+# Google Cloud Translation API:
+# 1. Go to https://cloud.google.com/translate
+# 2. Create a project and enable Translation API
+# 3. Create credentials (API Key)
+# 4. Uncomment the line above and paste your key
+#
+# DeepL API:
+# 1. Go to https://www.deepl.com/pro-api
+# 2. Sign up for free tier (500,000 characters/month)
+# 3. Get your API key from account settings
+# 4. Uncomment the line above and paste your key
