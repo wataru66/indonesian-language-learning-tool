@@ -38,75 +38,101 @@ class MainWindow(ft.UserControl):
         
     def build(self):
         """Build the main window UI"""
-        # Create app bar
-        self.app_bar = ft.AppBar(
-            title=ft.Text("インドネシア語学習支援ツール v1.0"),
-            center_title=True,
-            actions=[
-                ft.IconButton(
-                    icon=ft.icons.HELP,
-                    tooltip="ヘルプ",
-                    on_click=self._show_help
-                ),
-                ft.IconButton(
-                    icon=ft.icons.SETTINGS,
-                    tooltip="設定",
-                    on_click=self._show_settings
-                )
-            ]
-        )
-        
-        # Create tabs
-        self.tabs = ft.Tabs(
-            selected_index=0,
-            animation_duration=300,
-            tabs=[
-                ft.Tab(
-                    text="ファイル処理",
-                    icon=ft.icons.FOLDER_OPEN,
-                    content=self._create_file_tab()
-                ),
-                ft.Tab(
-                    text="学習リスト",
-                    icon=ft.icons.LIST,
-                    content=self._create_learning_list_tab()
-                ),
-                ft.Tab(
-                    text="フラッシュカード",
-                    icon=ft.icons.STYLE,
-                    content=self._create_flashcard_tab()
-                ),
-                ft.Tab(
-                    text="テスト",
-                    icon=ft.icons.QUIZ,
-                    content=self._create_test_tab()
-                ),
-                ft.Tab(
-                    text="進捗管理",
-                    icon=ft.icons.ANALYTICS,
-                    content=self._create_progress_tab()
-                )
-            ]
-        )
-        
-        # Create main layout
-        main_layout = ft.Column(
-            [
-                self.app_bar,
-                ft.Container(
-                    content=self.tabs,
-                    expand=True,
-                    padding=ft.padding.all(10)
-                )
-            ],
-            spacing=0
-        )
-        
-        # Show tutorial if first run
-        if self.is_first_run:
-            self._show_tutorial()
+        try:
+            print("Building MainWindow UI...")
             
-        return main_layout
+            # Create app bar
+            self.app_bar = ft.AppBar(
+                title=ft.Text("インドネシア語学習支援ツール v1.0"),
+                center_title=True,
+                actions=[
+                    ft.IconButton(
+                        icon=ft.icons.HELP,
+                        tooltip="ヘルプ",
+                        on_click=self._show_help
+                    ),
+                    ft.IconButton(
+                        icon=ft.icons.SETTINGS,
+                        tooltip="設定",
+                        on_click=self._show_settings
+                    )
+                ]
+            )
+            print("App bar created")
+            
+            # Create tabs
+            self.tabs = ft.Tabs(
+                selected_index=0,
+                animation_duration=300,
+                tabs=[
+                    ft.Tab(
+                        text="ファイル処理",
+                        icon=ft.icons.FOLDER_OPEN,
+                        content=self._create_file_tab()
+                    ),
+                    ft.Tab(
+                        text="学習リスト",
+                        icon=ft.icons.LIST,
+                        content=self._create_learning_list_tab()
+                    ),
+                    ft.Tab(
+                        text="フラッシュカード",
+                        icon=ft.icons.STYLE,
+                        content=self._create_flashcard_tab()
+                    ),
+                    ft.Tab(
+                        text="テスト",
+                        icon=ft.icons.QUIZ,
+                        content=self._create_test_tab()
+                    ),
+                    ft.Tab(
+                        text="進捗管理",
+                        icon=ft.icons.ANALYTICS,
+                        content=self._create_progress_tab()
+                    )
+                ]
+            )
+            print("Tabs created")
+            
+            # Create main layout
+            main_layout = ft.Column(
+                [
+                    self.app_bar,
+                    ft.Container(
+                        content=self.tabs,
+                        expand=True,
+                        padding=ft.padding.all(10)
+                    )
+                ],
+                spacing=0
+            )
+            print("Main layout created")
+            
+            # Show tutorial if first run (temporarily disabled)
+            if False:  # self.is_first_run:
+                print("First run detected, showing tutorial")
+                try:
+                    self._show_tutorial()
+                except Exception as tutorial_error:
+                    print(f"Tutorial error: {tutorial_error}")
+                    # Skip tutorial if there's an error
+                    pass
+            
+            print("MainWindow build completed")
+            return main_layout
+            
+        except Exception as e:
+            print(f"Error in MainWindow.build(): {e}")
+            import traceback
+            traceback.print_exc()
+            
+            # Return error UI
+            error_ui = ft.Column([
+                ft.Text("UI構築エラー", size=20, color="red"),
+                ft.Text(str(e), size=14),
+                ft.Text("詳細はターミナルを確認してください", size=12)
+            ])
+            return error_ui
     
     def _create_file_tab(self) -> ft.Container:
         """Create file processing tab"""

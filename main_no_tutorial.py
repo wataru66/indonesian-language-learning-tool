@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-Indonesian Language Learning Support Application
-Main entry point
+Main application without tutorial
 """
 
 import sys
@@ -18,7 +17,7 @@ from config.settings import Settings
 
 
 def main(page: ft.Page):
-    """Main application entry point"""
+    """Main application entry point without tutorial"""
     try:
         print("Initializing application...")
         
@@ -40,9 +39,10 @@ def main(page: ft.Page):
         db.initialize()
         print("Database initialized")
         
-        # Create and display main window
+        # Create main window but force skip tutorial
         main_window = MainWindow(page, db, settings)
-        print("MainWindow created")
+        main_window.is_first_run = False  # Force skip tutorial
+        print("MainWindow created (tutorial skipped)")
         
         page.add(main_window)
         print("MainWindow added to page")
