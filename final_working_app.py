@@ -265,7 +265,8 @@ def final_working_app(page: ft.Page):
         
         analyze_button.on_click = analyze_files
         
-        return ft.Column([
+        # 左側のコントロール部分
+        left_side = ft.Column([
             ft.Text("ファイル処理", size=24, weight=ft.FontWeight.BOLD),
             ft.Divider(),
             ft.Row([
@@ -301,15 +302,25 @@ def final_working_app(page: ft.Page):
             ft.Container(height=10),
             status_text,
             analyze_button,
-            ft.Container(height=10),
+        ], expand=True)
+        
+        # 右側の分析結果部分
+        right_side = ft.Column([
             ft.Text("分析結果:", size=16, weight=ft.FontWeight.BOLD),
+            ft.Container(height=10),
             ft.Container(
                 content=ft.Column([results_text], scroll=ft.ScrollMode.ALWAYS),
-                height=350,  # 高さを増やす
+                height=500,  # さらに高くする
                 border=ft.border.all(1, ft.colors.GREY_300),
                 border_radius=5,
                 padding=10
             )
+        ], expand=True)
+        
+        return ft.Row([
+            ft.Container(content=left_side, width=500),  # 左側を固定幅
+            ft.Container(width=20),  # スペーサー
+            ft.Container(content=right_side, expand=True)  # 右側を可変幅
         ])
     
     # Tab 1: Learning List
