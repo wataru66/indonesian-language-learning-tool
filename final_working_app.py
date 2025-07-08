@@ -748,19 +748,265 @@ def final_working_app(page: ft.Page):
     
     # Tab 2: Flashcards
     def create_flashcard_tab():
+        # State for flashcard session
+        current_cards = []
+        current_index = 0
+        is_answer_shown = False
+        session_stats = {"correct": 0, "total": 0}
+        
+        # UI elements
+        card_display = ft.Container(
+            width=500,
+            height=300,
+            bgcolor=ft.colors.WHITE,
+            border=ft.border.all(2, ft.colors.BLUE_200),
+            border_radius=15,
+            padding=30,
+            alignment=ft.alignment.center
+        )
+        
+        progress_text = ft.Text("", size=14, color=ft.colors.GREY_600)
+        stats_text = ft.Text("", size=14, color=ft.colors.GREY_600)
+        
+        def load_flashcards(e):
+            """Load flashcards from learning list"""
+            nonlocal current_cards, current_index
+            try:
+                # Get words from priority manager
+                items = priority_manager.get_priority_list(limit=20)  # Top 20 words
+                if not items:
+                    card_display.content = ft.Text("学習単語がありません。先にファイルを分析してください。", 
+                                                  size=16, text_align=ft.TextAlign.CENTER)
+                    page.update()
+                    return
+                
+                current_cards = items
+                current_index = 0
+                session_stats["correct"] = 0
+                session_stats["total"] = 0
+                
+                show_card()
+                update_stats()
+                print(f"Loaded {len(current_cards)} flashcards")
+                
+            except Exception as ex:
+                print(f"Error loading flashcards: {ex}")
+                card_display.content = ft.Text(f"エラー: {str(ex)}", size=16, text_align=ft.TextAlign.CENTER)
+                page.update()
+        
+        def show_card():
+            """Display current card (question side)"""
+            nonlocal is_answer_shown
+            if not current_cards or current_index >= len(current_cards):
+                show_session_complete()
+                return
+            
+            is_answer_shown = False
+            current_card = current_cards[current_index]
+            
+            # Show Indonesian word (question)
+            card_display.content = ft.Column([
+                ft.Text("インドネシア語", size=14, color=ft.colors.GREY_600),
+                ft.Container(height=20),
+                ft.Text(current_card.content, size=32, weight=ft.FontWeight.BOLD, 
+                       text_align=ft.TextAlign.CENTER),
+                ft.Container(height=30),
+                ft.Text("クリックで答えを表示", size=12, color=ft.colors.GREY_500),
+            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+            
+            card_display.bgcolor = ft.colors.BLUE_50
+            progress_text.value = f"カード {current_index + 1} / {len(current_cards)}"
+            update_button_states()
+            page.update()
+        
+        def show_answer():
+            """Display current card (answer side)"""
+            nonlocal is_answer_shown
+            if not current_cards or current_index >= len(current_cards):
+                return
+            
+            is_answer_shown = True
+            current_card = current_cards[current_index]
+            
+            # Show Japanese translation (answer)
+            card_display.content = ft.Column([
+                ft.Text("日本語", size=14, color=ft.colors.GREY_600),
+                ft.Container(height=10),
+                ft.Text(current_card.content, size=20, color=ft.colors.GREY_700),
+                ft.Container(height=20),
+                ft.Text(current_card.translation, size=28, weight=ft.FontWeight.BOLD, 
+                       text_align=ft.TextAlign.CENTER, color=ft.colors.GREEN_700),
+                ft.Container(height=20),
+                # Show notes if available
+                ft.Text(
+                    getattr(current_card, 'notes', '') or '',
+                    size=12, 
+                    color=ft.colors.GREY_600,
+                    text_align=ft.TextAlign.CENTER
+                ) if getattr(current_card, 'notes', '') else ft.Container(),
+            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+            
+            card_display.bgcolor = ft.colors.GREEN_50
+            update_button_states()
+            page.update()
+        
+        def show_session_complete():
+            """Show session completion screen"""
+            accuracy = (session_stats["correct"] / session_stats["total"] * 100) if session_stats["total"] > 0 else 0
+            
+            card_display.content = ft.Column([
+                ft.Icon(ft.icons.CELEBRATION, size=80, color=ft.colors.GREEN),
+                ft.Container(height=20),
+                ft.Text("セッション完了！", size=24, weight=ft.FontWeight.BOLD),
+                ft.Container(height=20),
+                ft.Text(f"正答率: {accuracy:.1f}%", size=20),
+                ft.Text(f"正解: {session_stats['correct']} / {session_stats['total']}", size=16, color=ft.colors.GREY_600),
+                ft.Container(height=30),
+                ft.ElevatedButton(
+                    "もう一度練習",
+                    on_click=load_flashcards,
+                    bgcolor=ft.colors.BLUE,
+                    color=ft.colors.WHITE
+                )
+            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+            
+            card_display.bgcolor = ft.colors.WHITE
+            progress_text.value = "セッション完了"
+            page.update()
+        
+        def on_card_click(e):
+            """Handle card click (show answer or next card)"""
+            if not current_cards:
+                return
+                
+            if not is_answer_shown:
+                show_answer()
+            # If answer is shown, wait for correct/incorrect button
+        
+        def mark_correct(e):
+            """Mark current answer as correct"""
+            if is_answer_shown:
+                session_stats["correct"] += 1
+                session_stats["total"] += 1
+                next_card()
+        
+        def mark_incorrect(e):
+            """Mark current answer as incorrect"""
+            if is_answer_shown:
+                session_stats["total"] += 1
+                next_card()
+        
+        def next_card():
+            """Move to next card"""
+            nonlocal current_index
+            current_index += 1
+            update_stats()
+            show_card()
+        
+        def update_stats():
+            """Update statistics display"""
+            if session_stats["total"] > 0:
+                accuracy = session_stats["correct"] / session_stats["total"] * 100
+                stats_text.value = f"正答率: {accuracy:.1f}% ({session_stats['correct']}/{session_stats['total']})"
+            else:
+                stats_text.value = "統計: まだありません"
+        
+        # Make card clickable
+        card_display.on_click = on_card_click
+        
+        # Control buttons
+        correct_button = ft.ElevatedButton(
+            "正解 ✓",
+            on_click=mark_correct,
+            bgcolor=ft.colors.GREEN,
+            color=ft.colors.WHITE,
+            disabled=True
+        )
+        
+        incorrect_button = ft.ElevatedButton(
+            "不正解 ✗",
+            on_click=mark_incorrect,
+            bgcolor=ft.colors.RED,
+            color=ft.colors.WHITE,
+            disabled=True
+        )
+        
+        skip_button = ft.ElevatedButton(
+            "スキップ →",
+            on_click=lambda e: next_card(),
+            bgcolor=ft.colors.GREY,
+            color=ft.colors.WHITE
+        )
+        
+        control_buttons = ft.Row([
+            correct_button,
+            incorrect_button,
+            skip_button
+        ], alignment=ft.MainAxisAlignment.CENTER, spacing=20)
+        
+        def update_button_states():
+            """Update button enabled/disabled states"""
+            correct_button.disabled = not is_answer_shown
+            incorrect_button.disabled = not is_answer_shown
+            page.update()
+        
+        # Initialize with welcome message
+        card_display.content = ft.Column([
+            ft.Icon(ft.icons.SCHOOL, size=80, color=ft.colors.BLUE),
+            ft.Container(height=20),
+            ft.Text("フラッシュカード学習", size=24, weight=ft.FontWeight.BOLD),
+            ft.Container(height=10),
+            ft.Text("「学習開始」ボタンで暗記練習を始めましょう", size=14, color=ft.colors.GREY_600),
+        ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+        
         return ft.Column([
             ft.Text("フラッシュカード", size=24, weight=ft.FontWeight.BOLD),
-            ft.Text("効率的な暗記学習", size=14, color=ft.colors.GREY_600),
+            ft.Text("インタラクティブな暗記学習", size=14, color=ft.colors.GREY_600),
             ft.Divider(),
+            
+            # Start button
             ft.Container(
-                content=ft.Column([
-                    ft.Icon(ft.icons.STYLE, size=100, color=ft.colors.BLUE),
-                    ft.Text("フラッシュカード機能", size=20),
-                    ft.Text("開発中です", size=16, color=ft.colors.GREY_600),
-                    ft.Text("学習リストから単語を選んで暗記練習ができます", size=14)
-                ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                alignment=ft.alignment.center,
-                height=400
+                content=ft.ElevatedButton(
+                    "学習開始",
+                    icon=ft.icons.PLAY_ARROW,
+                    on_click=load_flashcards,
+                    bgcolor=ft.colors.BLUE,
+                    color=ft.colors.WHITE,
+                    height=40
+                ),
+                alignment=ft.alignment.center
+            ),
+            
+            ft.Container(height=20),
+            
+            # Progress and stats
+            ft.Row([
+                progress_text,
+                ft.Container(expand=True),
+                stats_text
+            ]),
+            
+            ft.Container(height=10),
+            
+            # Flashcard display
+            ft.Container(
+                content=card_display,
+                alignment=ft.alignment.center
+            ),
+            
+            ft.Container(height=20),
+            
+            # Control buttons
+            control_buttons,
+            
+            ft.Container(height=10),
+            
+            # Instructions
+            ft.Text(
+                "💡 使い方: カードをクリック→答え表示→正解/不正解を選択",
+                size=12,
+                color=ft.colors.GREY_600,
+                text_align=ft.TextAlign.CENTER
             )
         ])
     
