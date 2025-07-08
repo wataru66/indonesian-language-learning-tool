@@ -343,7 +343,10 @@ def final_working_app(page: ft.Page):
                         
                         # Create subtitle with notes indicator
                         subtitle_text = f"翻訳: {item.translation} | 優先度: {item.learning_priority:.1f}"
-                        item_notes = getattr(item, 'notes', '')
+                        try:
+                            item_notes = getattr(item, 'notes', '') or ''
+                        except AttributeError:
+                            item_notes = ''
                         if item_notes:
                             subtitle_text += f" 📝"
                         
@@ -392,9 +395,15 @@ def final_working_app(page: ft.Page):
                 autofocus=True
             )
             
+            # Get notes safely
+            try:
+                notes_value = getattr(word_item, 'notes', '') or ''
+            except AttributeError:
+                notes_value = ''
+                
             notes_field = ft.TextField(
                 label="備考・注意事項",
-                value=getattr(word_item, 'notes', ''),
+                value=notes_value,
                 width=300,
                 multiline=True,
                 min_lines=2,
@@ -557,10 +566,16 @@ def final_working_app(page: ft.Page):
                             item.translation.endswith('（翻訳未登録）') or
                             item.translation == item.content
                         )
+                        # Get notes safely
+                        try:
+                            item_notes = getattr(item, 'notes', '') or ''
+                        except AttributeError:
+                            item_notes = ''
+                            
                         writer.writerow([
                             item.content,
                             item.translation,
-                            getattr(item, 'notes', ''),  # 備考欄
+                            item_notes,  # 備考欄
                             item.stem if hasattr(item, 'stem') else '',
                             item.frequency,
                             f"{item.learning_priority:.1f}",

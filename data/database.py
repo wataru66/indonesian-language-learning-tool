@@ -70,11 +70,16 @@ class Database:
         
         # Add notes column if it doesn't exist (migration)
         try:
-            self.cursor.execute("ALTER TABLE words ADD COLUMN notes TEXT DEFAULT ''")
-            self.connection.commit()
-            print("Added notes column to words table")
-        except sqlite3.OperationalError:
-            # Column already exists
+            # Check if notes column exists
+            self.cursor.execute("PRAGMA table_info(words)")
+            columns = [column[1] for column in self.cursor.fetchall()]
+            
+            if 'notes' not in columns:
+                self.cursor.execute("ALTER TABLE words ADD COLUMN notes TEXT DEFAULT ''")
+                self.connection.commit()
+                print("✅ Added notes column to words table")
+        except sqlite3.OperationalError as e:
+            print(f"Migration note: {e}")
             pass
         
         # Phrases table
@@ -470,6 +475,16 @@ class Database:
     # Helper methods
     def _row_to_word(self, row) -> Word:
         """Convert database row to Word object"""
+        # Handle notes field safely for existing data
+        try:
+            # Check if notes column exists and get value
+            if hasattr(row, 'keys') and 'notes' in row.keys():
+                notes = row['notes'] or ''
+            else:
+                notes = ''
+        except Exception:
+            notes = ''
+            
         return Word(
             id=row['id'],
             indonesian=row['indonesian'],
@@ -479,7 +494,7 @@ class Database:
             frequency=row['frequency'],
             priority=row['priority'],
             difficulty=row['difficulty'],
-            notes=row.get('notes', ''),  # Handle existing rows without notes
+            notes=notes,
             created_at=row['created_at'],
             updated_at=row['updated_at']
         )
