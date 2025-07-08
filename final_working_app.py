@@ -506,6 +506,139 @@ def final_working_app(page: ft.Page):
             except Exception as e:
                 print(f"Auto-translation error: {e}")
         
+        def export_to_csv(e):
+            """Export learning list to CSV for Excel editing"""
+            try:
+                import csv
+                from datetime import datetime
+                
+                # Get all learning items
+                items = priority_manager.get_priority_list(limit=1000)
+                if not items:
+                    print("No items to export")
+                    return
+                
+                # Create CSV file
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                csv_path = Path(__file__).parent / f"indonesian_words_{timestamp}.csv"
+                
+                with open(csv_path, 'w', newline='', encoding='utf-8-sig') as csvfile:
+                    writer = csv.writer(csvfile)
+                    # Write header
+                    writer.writerow(['インドネシア語', '日本語翻訳', '語幹', '頻度', '優先度', '修正要否'])
+                    
+                    # Write data
+                    for item in items:
+                        needs_fix = (
+                            item.translation.endswith('（翻訳取得失敗）') or 
+                            item.translation.endswith('（翻訳未登録）') or
+                            item.translation == item.content
+                        )
+                        writer.writerow([
+                            item.content,
+                            item.translation,
+                            item.stem if hasattr(item, 'stem') else '',
+                            item.frequency,
+                            f"{item.learning_priority:.1f}",
+                            "要修正" if needs_fix else "OK"
+                        ])
+                
+                print(f"✅ CSV exported: {csv_path}")
+                print(f"Exported {len(items)} words")
+                print("Excelで編集後、「CSV取り込み」ボタンで読み込んでください")
+                
+            except Exception as ex:
+                print(f"❌ CSV export error: {ex}")
+        
+        def import_from_csv(e):
+            """Import translations from CSV file"""
+            
+            def on_file_result(result):
+                if result and result.files:
+                    csv_file = result.files[0]
+                    try:
+                        import csv
+                        
+                        # Detect encoding
+                        try:
+                            import chardet
+                            with open(csv_file.path, 'rb') as f:
+                                raw_data = f.read()
+                                encoding_result = chardet.detect(raw_data)
+                                encoding = encoding_result['encoding'] or 'utf-8'
+                        except ImportError:
+                            # Fallback if chardet is not available
+                            encoding = 'utf-8-sig'
+                        
+                        print(f"Reading CSV file: {csv_file.name} (encoding: {encoding})")
+                        
+                        updated_count = 0
+                        error_count = 0
+                        
+                        with open(csv_file.path, 'r', encoding=encoding) as csvfile:
+                            reader = csv.reader(csvfile)
+                            header = next(reader)  # Skip header
+                            print(f"CSV header: {header}")
+                            
+                            for row_num, row in enumerate(reader, start=2):
+                                if len(row) < 2:
+                                    continue
+                                
+                                indonesian_word = row[0].strip()
+                                japanese_translation = row[1].strip()
+                                
+                                if not indonesian_word or not japanese_translation:
+                                    continue
+                                
+                                try:
+                                    # Find and update the word
+                                    words = db.search_words(indonesian_word)
+                                    if words:
+                                        word = words[0]
+                                        from data.models import Word
+                                        
+                                        updated_word = Word(
+                                            id=word.id,
+                                            indonesian=word.indonesian,
+                                            japanese=japanese_translation,
+                                            stem=word.stem,
+                                            category=word.category,
+                                            difficulty=word.difficulty,
+                                            frequency=word.frequency
+                                        )
+                                        db.update_word(updated_word)
+                                        updated_count += 1
+                                        print(f"Updated: {indonesian_word} -> {japanese_translation}")
+                                    else:
+                                        print(f"Word not found: {indonesian_word}")
+                                        error_count += 1
+                                        
+                                except Exception as update_error:
+                                    print(f"Error updating {indonesian_word}: {update_error}")
+                                    error_count += 1
+                        
+                        print(f"✅ CSV import complete: {updated_count} updated, {error_count} errors")
+                        load_learning_items()  # Refresh the list
+                        
+                    except Exception as ex:
+                        print(f"❌ CSV import error: {ex}")
+                else:
+                    print("No file selected")
+            
+            # Create file picker for CSV import
+            csv_picker = ft.FilePicker(on_result=on_file_result)
+            page.overlay.append(csv_picker)
+            page.update()
+            
+            try:
+                csv_picker.pick_files(
+                    dialog_title="CSVファイルを選択",
+                    allowed_extensions=["csv"],
+                    allow_multiple=False
+                )
+            except Exception as ex:
+                print(f"File picker error: {ex}")
+        
         load_button = ft.ElevatedButton(
             "学習リスト更新",
             icon=ft.icons.REFRESH,
@@ -520,6 +653,22 @@ def final_working_app(page: ft.Page):
             color=ft.colors.WHITE
         )
         
+        export_csv_button = ft.ElevatedButton(
+            "CSV書き出し",
+            icon=ft.icons.DOWNLOAD,
+            on_click=export_to_csv,
+            bgcolor=ft.colors.BLUE,
+            color=ft.colors.WHITE
+        )
+        
+        import_csv_button = ft.ElevatedButton(
+            "CSV取り込み",
+            icon=ft.icons.UPLOAD,
+            on_click=import_from_csv,
+            bgcolor=ft.colors.GREEN,
+            color=ft.colors.WHITE
+        )
+        
         return ft.Column([
             ft.Text("学習リスト", size=24, weight=ft.FontWeight.BOLD),
             ft.Text("優先度順の学習アイテム（赤文字は翻訳要修正）", size=14, color=ft.colors.GREY_600),
@@ -528,6 +677,13 @@ def final_working_app(page: ft.Page):
                 load_button,
                 auto_translate_button
             ], spacing=10),
+            ft.Container(height=5),
+            ft.Row([
+                export_csv_button,
+                import_csv_button
+            ], spacing=10),
+            ft.Text("📋 CSV編集手順: 1.書き出し → 2.Excelで翻訳編集 → 3.取り込み", 
+                   size=12, color=ft.colors.GREY_600),
             ft.Container(height=10),
             ft.Container(
                 content=list_view,
