@@ -313,7 +313,13 @@ def final_working_app(page: ft.Page):
     
     # Tab 1: Learning List
     def create_learning_list_tab():
-        list_view = ft.ListView(height=400, spacing=5)
+        list_view = ft.ListView(height=350, spacing=5)
+        edit_dialog = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("翻訳を編集"),
+            content_padding=20,
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
         
         def load_learning_items():
             list_view.controls.clear()
@@ -327,14 +333,31 @@ def final_working_app(page: ft.Page):
                     )
                 else:
                     for item in items:
+                        # Check if translation needs improvement
+                        needs_translation = (
+                            item.translation.endswith('（翻訳取得失敗）') or 
+                            item.translation.endswith('（翻訳未登録）') or
+                            item.translation == item.content
+                        )
+                        
                         list_item = ft.ListTile(
                             leading=ft.Icon(
                                 ft.icons.STAR if item.learning_priority > 5 else ft.icons.CIRCLE,
                                 color=ft.colors.YELLOW if item.learning_priority > 5 else None
                             ),
                             title=ft.Text(item.content),
-                            subtitle=ft.Text(f"翻訳: {item.translation} | 優先度: {item.learning_priority:.1f}"),
-                            trailing=ft.Text(f"頻度: {item.frequency}")
+                            subtitle=ft.Text(
+                                f"翻訳: {item.translation} | 優先度: {item.learning_priority:.1f}",
+                                color=ft.colors.RED if needs_translation else None
+                            ),
+                            trailing=ft.Row([
+                                ft.Text(f"頻度: {item.frequency}"),
+                                ft.IconButton(
+                                    icon=ft.icons.EDIT,
+                                    tooltip="翻訳を編集",
+                                    on_click=lambda e, word=item: edit_translation(word)
+                                )
+                            ], tight=True)
                         )
                         list_view.controls.append(list_item)
                 
@@ -344,17 +367,167 @@ def final_working_app(page: ft.Page):
                 list_view.controls.append(ft.Text(f"エラー: {str(e)}"))
                 page.update()
         
+        def edit_translation(word_item):
+            """Edit translation dialog"""
+            
+            # Create input fields
+            indonesian_field = ft.TextField(
+                label="インドネシア語",
+                value=word_item.content,
+                read_only=True,
+                width=300
+            )
+            
+            japanese_field = ft.TextField(
+                label="日本語翻訳",
+                value=word_item.translation,
+                width=300,
+                autofocus=True
+            )
+            
+            def save_translation(e):
+                try:
+                    new_translation = japanese_field.value.strip()
+                    if not new_translation:
+                        japanese_field.error_text = "翻訳を入力してください"
+                        page.update()
+                        return
+                    
+                    # Update in database
+                    from data.models import Word
+                    
+                    # Find and update the word
+                    words = db.search_words(word_item.content)
+                    if words:
+                        word = words[0]
+                        # Update the word's translation
+                        updated_word = Word(
+                            id=word.id,
+                            indonesian=word.indonesian,
+                            japanese=new_translation,
+                            stem=word.stem,
+                            category=word.category,
+                            difficulty=word.difficulty,
+                            frequency=word.frequency
+                        )
+                        db.update_word(updated_word)
+                        print(f"Updated translation: {word_item.content} -> {new_translation}")
+                        
+                        # Close dialog and refresh list
+                        page.dialog.open = False
+                        page.update()
+                        load_learning_items()
+                    else:
+                        japanese_field.error_text = "単語が見つかりません"
+                        page.update()
+                        
+                except Exception as ex:
+                    print(f"Translation update error: {ex}")
+                    japanese_field.error_text = f"更新エラー: {str(ex)}"
+                    page.update()
+            
+            def cancel_edit(e):
+                page.dialog.open = False
+                page.update()
+            
+            # Update dialog content
+            edit_dialog.content = ft.Column([
+                indonesian_field,
+                ft.Container(height=10),
+                japanese_field,
+                ft.Container(height=10),
+                ft.Text("※ 専門用語や不適切な自動翻訳を手動で修正できます", 
+                       size=12, color=ft.colors.GREY_600)
+            ], tight=True)
+            
+            edit_dialog.actions = [
+                ft.TextButton("キャンセル", on_click=cancel_edit),
+                ft.ElevatedButton("保存", on_click=save_translation)
+            ]
+            
+            # Show dialog
+            page.dialog = edit_dialog
+            page.dialog.open = True
+            page.update()
+        
+        def auto_translate_missing():
+            """Auto-translate words with missing translations"""
+            try:
+                from translation_service import get_translation_service
+                from translation_config import load_api_keys
+                
+                # Load API keys and initialize translation service
+                api_keys = load_api_keys()
+                translator = get_translation_service(
+                    google_api_key=api_keys.get('google'),
+                    deepl_api_key=api_keys.get('deepl')
+                )
+                
+                # Get words with missing translations
+                items = priority_manager.get_priority_list(limit=100)
+                missing_count = 0
+                updated_count = 0
+                
+                for item in items:
+                    if (item.translation.endswith('（翻訳取得失敗）') or 
+                        item.translation.endswith('（翻訳未登録）') or
+                        item.translation == item.content):
+                        
+                        missing_count += 1
+                        print(f"Re-translating: {item.content}...")
+                        
+                        new_translation = translator.translate(item.content, 'id', 'ja')
+                        if new_translation and new_translation != item.content:
+                            # Update in database
+                            words = db.search_words(item.content)
+                            if words:
+                                from data.models import Word
+                                word = words[0]
+                                updated_word = Word(
+                                    id=word.id,
+                                    indonesian=word.indonesian,
+                                    japanese=new_translation,
+                                    stem=word.stem,
+                                    category=word.category,
+                                    difficulty=word.difficulty,
+                                    frequency=word.frequency
+                                )
+                                db.update_word(updated_word)
+                                updated_count += 1
+                                print(f"Updated: {item.content} -> {new_translation}")
+                        
+                        # Small delay to avoid rate limiting
+                        import time
+                        time.sleep(0.5)
+                
+                print(f"Auto-translation complete: {updated_count}/{missing_count} words updated")
+                load_learning_items()
+                
+            except Exception as e:
+                print(f"Auto-translation error: {e}")
+        
         load_button = ft.ElevatedButton(
             "学習リスト更新",
             icon=ft.icons.REFRESH,
             on_click=lambda e: load_learning_items()
         )
         
+        auto_translate_button = ft.ElevatedButton(
+            "未翻訳を自動翻訳",
+            icon=ft.icons.TRANSLATE,
+            on_click=lambda e: auto_translate_missing(),
+            bgcolor=ft.colors.ORANGE,
+            color=ft.colors.WHITE
+        )
+        
         return ft.Column([
             ft.Text("学習リスト", size=24, weight=ft.FontWeight.BOLD),
-            ft.Text("優先度順の学習アイテム", size=14, color=ft.colors.GREY_600),
+            ft.Text("優先度順の学習アイテム（赤文字は翻訳要修正）", size=14, color=ft.colors.GREY_600),
             ft.Divider(),
-            load_button,
+            ft.Row([
+                load_button,
+                auto_translate_button
+            ], spacing=10),
             ft.Container(height=10),
             ft.Container(
                 content=list_view,
