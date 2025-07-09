@@ -1012,19 +1012,386 @@ def final_working_app(page: ft.Page):
     
     # Tab 3: Test
     def create_test_tab():
+        # Test state
+        test_words = []
+        current_question = 0
+        test_type = "typing"  # "typing" or "choice"
+        test_stats = {"correct": 0, "total": 0, "start_time": None}
+        user_answer = ""
+        
+        # UI elements
+        question_display = ft.Container(
+            width=600,
+            height=200,
+            bgcolor=ft.colors.WHITE,
+            border=ft.border.all(2, ft.colors.BLUE_200),
+            border_radius=10,
+            padding=30,
+            alignment=ft.alignment.center
+        )
+        
+        answer_input = ft.TextField(
+            label="答えを入力してください",
+            width=400,
+            autofocus=True,
+            on_submit=lambda e: check_typing_answer()
+        )
+        
+        choice_buttons = ft.Column([])
+        submit_button = ft.ElevatedButton(
+            "回答",
+            on_click=lambda e: check_typing_answer(),
+            bgcolor=ft.colors.BLUE,
+            color=ft.colors.WHITE
+        )
+        
+        result_display = ft.Container(
+            width=600,
+            height=100,
+            visible=False
+        )
+        
+        progress_text = ft.Text("", size=14)
+        stats_text = ft.Text("", size=14)
+        
+        def start_test(test_mode):
+            """Start test with specified mode"""
+            nonlocal test_words, current_question, test_type, test_stats
+            
+            try:
+                # Get test words
+                items = priority_manager.get_priority_list(limit=10)  # 10 questions
+                if not items:
+                    question_display.content = ft.Text("テスト用の単語がありません。先にファイルを分析してください。", 
+                                                     size=16, text_align=ft.TextAlign.CENTER)
+                    page.update()
+                    return
+                
+                test_words = items
+                current_question = 0
+                test_type = test_mode
+                test_stats = {"correct": 0, "total": 0, "start_time": None}
+                
+                import time
+                test_stats["start_time"] = time.time()
+                
+                show_question()
+                update_ui_for_test_type()
+                print(f"Started {test_mode} test with {len(test_words)} words")
+                
+            except Exception as ex:
+                print(f"Error starting test: {ex}")
+                question_display.content = ft.Text(f"エラー: {str(ex)}", size=16, text_align=ft.TextAlign.CENTER)
+                page.update()
+        
+        def show_question():
+            """Display current question"""
+            if current_question >= len(test_words):
+                show_test_complete()
+                return
+            
+            word = test_words[current_question]
+            
+            if test_type == "typing":
+                # Show Japanese, ask for Indonesian
+                question_display.content = ft.Column([
+                    ft.Text("次の日本語をインドネシア語で入力してください", size=14, color=ft.colors.GREY_600),
+                    ft.Container(height=20),
+                    ft.Text(word.translation, size=28, weight=ft.FontWeight.BOLD, 
+                           text_align=ft.TextAlign.CENTER, color=ft.colors.BLUE_800),
+                    ft.Container(height=10),
+                    ft.Text(f"問題 {current_question + 1} / {len(test_words)}", 
+                           size=12, color=ft.colors.GREY_500)
+                ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+                
+            else:  # choice
+                # Show Indonesian, ask for Japanese (multiple choice)
+                import random
+                
+                # Get correct answer
+                correct_answer = word.translation
+                
+                # Generate wrong choices
+                all_words = test_words + (priority_manager.get_priority_list(limit=50) or [])
+                wrong_choices = [w.translation for w in all_words if w.translation != correct_answer]
+                wrong_choices = random.sample(wrong_choices, min(3, len(wrong_choices)))
+                
+                # Mix choices
+                choices = [correct_answer] + wrong_choices
+                random.shuffle(choices)
+                
+                question_display.content = ft.Column([
+                    ft.Text("次のインドネシア語の意味を選択してください", size=14, color=ft.colors.GREY_600),
+                    ft.Container(height=20),
+                    ft.Text(word.content, size=28, weight=ft.FontWeight.BOLD, 
+                           text_align=ft.TextAlign.CENTER, color=ft.colors.BLUE_800),
+                    ft.Container(height=10),
+                    ft.Text(f"問題 {current_question + 1} / {len(test_words)}", 
+                           size=12, color=ft.colors.GREY_500)
+                ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+                
+                # Create choice buttons
+                choice_buttons.controls.clear()
+                for i, choice in enumerate(choices):
+                    btn = ft.ElevatedButton(
+                        f"{chr(65+i)}. {choice}",
+                        on_click=lambda e, selected=choice: check_choice_answer(selected),
+                        width=350,
+                        height=45
+                    )
+                    choice_buttons.controls.append(btn)
+            
+            # Reset input
+            answer_input.value = ""
+            result_display.visible = False
+            
+            progress_text.value = f"問題 {current_question + 1} / {len(test_words)}"
+            update_stats()
+            page.update()
+        
+        def check_typing_answer():
+            """Check typing test answer"""
+            if current_question >= len(test_words):
+                return
+                
+            user_input = answer_input.value.strip().lower()
+            correct_answer = test_words[current_question].content.lower()
+            
+            # Simple similarity check
+            import difflib
+            similarity = difflib.SequenceMatcher(None, user_input, correct_answer).ratio()
+            is_correct = similarity >= 0.8  # 80% similarity threshold
+            
+            show_answer_result(is_correct, user_input, correct_answer)
+            
+            # Update stats
+            test_stats["total"] += 1
+            if is_correct:
+                test_stats["correct"] += 1
+            
+            # Move to next question after delay
+            def next_after_delay():
+                import time
+                time.sleep(1.5)
+                next_question()
+            
+            # Use threading to avoid blocking UI
+            import threading
+            threading.Thread(target=next_after_delay, daemon=True).start()
+        
+        def check_choice_answer(selected_answer):
+            """Check choice test answer"""
+            if current_question >= len(test_words):
+                return
+                
+            correct_answer = test_words[current_question].translation
+            is_correct = selected_answer == correct_answer
+            
+            show_answer_result(is_correct, selected_answer, correct_answer)
+            
+            # Update stats
+            test_stats["total"] += 1
+            if is_correct:
+                test_stats["correct"] += 1
+            
+            # Move to next question after delay
+            def next_after_delay():
+                import time
+                time.sleep(1.5)
+                next_question()
+            
+            import threading
+            threading.Thread(target=next_after_delay, daemon=True).start()
+        
+        def show_answer_result(is_correct, user_answer, correct_answer):
+            """Show answer result"""
+            if is_correct:
+                result_display.content = ft.Container(
+                    content=ft.Row([
+                        ft.Icon(ft.icons.CHECK_CIRCLE, color=ft.colors.GREEN, size=30),
+                        ft.Text("正解！", size=20, color=ft.colors.GREEN, weight=ft.FontWeight.BOLD)
+                    ], alignment=ft.MainAxisAlignment.CENTER),
+                    bgcolor=ft.colors.GREEN_100,
+                    padding=15,
+                    border_radius=10
+                )
+            else:
+                result_display.content = ft.Container(
+                    content=ft.Column([
+                        ft.Row([
+                            ft.Icon(ft.icons.CANCEL, color=ft.colors.RED, size=30),
+                            ft.Text("不正解", size=20, color=ft.colors.RED, weight=ft.FontWeight.BOLD)
+                        ], alignment=ft.MainAxisAlignment.CENTER),
+                        ft.Text(f"正解: {correct_answer}", size=14, color=ft.colors.BLACK),
+                        ft.Text(f"回答: {user_answer}", size=14, color=ft.colors.GREY_600)
+                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                    bgcolor=ft.colors.RED_100,
+                    padding=15,
+                    border_radius=10
+                )
+            
+            result_display.visible = True
+            page.update()
+        
+        def next_question():
+            """Move to next question"""
+            nonlocal current_question
+            current_question += 1
+            show_question()
+        
+        def show_test_complete():
+            """Show test completion screen"""
+            import time
+            elapsed_time = int(time.time() - test_stats["start_time"]) if test_stats["start_time"] else 0
+            accuracy = (test_stats["correct"] / test_stats["total"] * 100) if test_stats["total"] > 0 else 0
+            
+            question_display.content = ft.Column([
+                ft.Icon(ft.icons.EMOJI_EVENTS, size=80, color=ft.colors.AMBER),
+                ft.Container(height=20),
+                ft.Text("テスト完了！", size=24, weight=ft.FontWeight.BOLD),
+                ft.Container(height=15),
+                ft.Text(f"正答率: {accuracy:.1f}%", size=20, color=ft.colors.BLUE_700),
+                ft.Text(f"正解: {test_stats['correct']} / {test_stats['total']}", size=16),
+                ft.Text(f"所要時間: {elapsed_time}秒", size=14, color=ft.colors.GREY_600),
+                ft.Container(height=20),
+                ft.Row([
+                    ft.ElevatedButton(
+                        "タイピングテスト再開",
+                        on_click=lambda e: start_test("typing"),
+                        bgcolor=ft.colors.BLUE,
+                        color=ft.colors.WHITE
+                    ),
+                    ft.ElevatedButton(
+                        "選択テスト再開", 
+                        on_click=lambda e: start_test("choice"),
+                        bgcolor=ft.colors.GREEN,
+                        color=ft.colors.WHITE
+                    )
+                ], alignment=ft.MainAxisAlignment.CENTER, spacing=10)
+            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+            
+            # Hide input elements
+            answer_input.visible = False
+            submit_button.visible = False
+            choice_buttons.visible = False
+            result_display.visible = False
+            
+            progress_text.value = "テスト完了"
+            page.update()
+        
+        def update_ui_for_test_type():
+            """Update UI based on test type"""
+            if test_type == "typing":
+                answer_input.visible = True
+                submit_button.visible = True
+                choice_buttons.visible = False
+            else:  # choice
+                answer_input.visible = False
+                submit_button.visible = False
+                choice_buttons.visible = True
+            
+            page.update()
+        
+        def update_stats():
+            """Update statistics display"""
+            if test_stats["total"] > 0:
+                accuracy = test_stats["correct"] / test_stats["total"] * 100
+                stats_text.value = f"正答率: {accuracy:.1f}% ({test_stats['correct']}/{test_stats['total']})"
+            else:
+                stats_text.value = "統計: 開始前"
+        
+        # Initialize welcome screen
+        question_display.content = ft.Column([
+            ft.Icon(ft.icons.QUIZ, size=80, color=ft.colors.GREEN),
+            ft.Container(height=20),
+            ft.Text("学習効果測定テスト", size=24, weight=ft.FontWeight.BOLD),
+            ft.Container(height=10),
+            ft.Text("タイピングまたは選択式でテストを開始しましょう", size=14, color=ft.colors.GREY_600),
+        ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+        
+        # Hide input elements initially
+        answer_input.visible = False
+        submit_button.visible = False
+        choice_buttons.visible = False
+        
         return ft.Column([
             ft.Text("テスト", size=24, weight=ft.FontWeight.BOLD),
-            ft.Text("学習効果の測定", size=14, color=ft.colors.GREY_600),
+            ft.Text("学習効果の測定とスキルチェック", size=14, color=ft.colors.GREY_600),
             ft.Divider(),
+            
+            # Test type selection
+            ft.Row([
+                ft.ElevatedButton(
+                    "タイピングテスト",
+                    icon=ft.icons.KEYBOARD,
+                    on_click=lambda e: start_test("typing"),
+                    bgcolor=ft.colors.BLUE,
+                    color=ft.colors.WHITE,
+                    height=40
+                ),
+                ft.ElevatedButton(
+                    "選択式テスト",
+                    icon=ft.icons.RADIO_BUTTON_CHECKED,
+                    on_click=lambda e: start_test("choice"),
+                    bgcolor=ft.colors.GREEN,
+                    color=ft.colors.WHITE,
+                    height=40
+                )
+            ], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
+            
+            ft.Container(height=15),
+            
+            # Progress and stats
+            ft.Row([
+                progress_text,
+                ft.Container(expand=True),
+                stats_text
+            ]),
+            
+            ft.Container(height=10),
+            
+            # Question display
             ft.Container(
-                content=ft.Column([
-                    ft.Icon(ft.icons.QUIZ, size=100, color=ft.colors.GREEN),
-                    ft.Text("テスト機能", size=20),
-                    ft.Text("開発中です", size=16, color=ft.colors.GREY_600),
-                    ft.Text("タイピングテストと選択問題で実力を確認", size=14)
-                ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                alignment=ft.alignment.center,
-                height=400
+                content=question_display,
+                alignment=ft.alignment.center
+            ),
+            
+            ft.Container(height=15),
+            
+            # Answer input (typing)
+            ft.Container(
+                content=answer_input,
+                alignment=ft.alignment.center
+            ),
+            
+            # Submit button (typing)
+            ft.Container(
+                content=submit_button,
+                alignment=ft.alignment.center
+            ),
+            
+            # Choice buttons (multiple choice)
+            ft.Container(
+                content=choice_buttons,
+                alignment=ft.alignment.center
+            ),
+            
+            ft.Container(height=10),
+            
+            # Result display
+            ft.Container(
+                content=result_display,
+                alignment=ft.alignment.center
+            ),
+            
+            ft.Container(height=10),
+            
+            # Instructions
+            ft.Text(
+                "💡 タイピング: 日本語→インドネシア語入力 | 選択式: インドネシア語→日本語選択",
+                size=12,
+                color=ft.colors.GREY_600,
+                text_align=ft.TextAlign.CENTER
             )
         ])
     
