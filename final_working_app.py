@@ -1398,46 +1398,304 @@ def final_working_app(page: ft.Page):
     # Tab 4: Progress
     def create_progress_tab():
         stats_text = ft.Text("", size=14)
+        word_stats_text = ft.Text("", size=14)
+        recent_activity_text = ft.Text("", size=14)
         
         def load_stats():
             try:
+                # Basic database stats
                 stats = db.get_learning_stats()
-                stats_text.value = f"""学習統計
+                
+                # Word analysis stats
+                word_stats = get_word_analysis_stats()
+                
+                # Recent activity
+                recent_activity = get_recent_activity()
+                
+                # Format basic stats
+                stats_text.value = f"""📊 基本統計
 
-総単語数: {stats['total_words']}
-総フレーズ数: {stats['total_phrases']}
-習得済み単語: {stats['words_mastered']}
-習得済みフレーズ: {stats['phrases_mastered']}
+総単語数: {stats['total_words']:,}
+総フレーズ数: {stats['total_phrases']:,}
+習得済み単語: {stats['words_mastered']:,}
+習得済みフレーズ: {stats['phrases_mastered']:,}
 単語習得率: {stats.get('words_mastery_rate', 0):.1f}%
 フレーズ習得率: {stats.get('phrases_mastery_rate', 0):.1f}%
 
-学習セッション数: {stats['total_sessions']}
+学習セッション数: {stats['total_sessions']:,}
 総学習時間: {stats['total_study_time']} 分
-実施テスト数: {stats['total_tests']}
+実施テスト数: {stats['total_tests']:,}
 平均正答率: {stats.get('average_accuracy', 0):.1f}%"""
+                
+                # Format word stats
+                word_stats_text.value = f"""🔤 単語分析統計
+
+分析済み単語数: {word_stats['total_words']:,}
+翻訳済み単語数: {word_stats['translated_words']:,}
+備考付き単語数: {word_stats['words_with_notes']:,}
+翻訳完了率: {word_stats['translation_rate']:.1f}%
+
+カテゴリ別分布:
+• 一般: {word_stats['categories'].get('general', 0):,}語
+• ビジネス: {word_stats['categories'].get('business', 0):,}語
+• 製造: {word_stats['categories'].get('production', 0):,}語
+• 技術: {word_stats['categories'].get('technical', 0):,}語
+
+優先度レベル分布:
+• 高 (7.0+): {word_stats['priority_levels'].get('high', 0):,}語
+• 中 (4.0-7.0): {word_stats['priority_levels'].get('medium', 0):,}語
+• 低 (-4.0): {word_stats['priority_levels'].get('low', 0):,}語"""
+                
+                # Format recent activity
+                recent_activity_text.value = f"""📈 最近の活動
+
+{recent_activity['summary']}
+
+頻出単語 TOP 5:
+{recent_activity['top_words']}
+
+最近追加された単語:
+{recent_activity['recent_words']}"""
+                
                 page.update()
+                
             except Exception as e:
                 print(f"Error loading stats: {e}")
                 stats_text.value = f"統計情報の読み込みエラー: {str(e)}"
                 page.update()
         
+        def get_word_analysis_stats():
+            """Get word analysis statistics"""
+            try:
+                # Get all words from database
+                words = db.get_all_words(limit=None)
+                
+                stats = {
+                    'total_words': len(words),
+                    'translated_words': 0,
+                    'words_with_notes': 0,
+                    'categories': {},
+                    'priority_levels': {'high': 0, 'medium': 0, 'low': 0}
+                }
+                
+                for word in words:
+                    # Check translation status
+                    if (word.japanese and 
+                        not word.japanese.endswith('（翻訳取得失敗）') and
+                        not word.japanese.endswith('（翻訳未登録）')):
+                        stats['translated_words'] += 1
+                    
+                    # Check notes
+                    if hasattr(word, 'notes') and word.notes:
+                        stats['words_with_notes'] += 1
+                    
+                    # Category distribution
+                    category = word.category.value if hasattr(word.category, 'value') else str(word.category)
+                    stats['categories'][category] = stats['categories'].get(category, 0) + 1
+                    
+                    # Priority level distribution
+                    priority = word.priority
+                    if priority >= 7.0:
+                        stats['priority_levels']['high'] += 1
+                    elif priority >= 4.0:
+                        stats['priority_levels']['medium'] += 1
+                    else:
+                        stats['priority_levels']['low'] += 1
+                
+                # Calculate translation rate
+                stats['translation_rate'] = (stats['translated_words'] / stats['total_words'] * 100) if stats['total_words'] > 0 else 0
+                
+                return stats
+                
+            except Exception as e:
+                print(f"Error getting word analysis stats: {e}")
+                return {
+                    'total_words': 0,
+                    'translated_words': 0,
+                    'words_with_notes': 0,
+                    'translation_rate': 0,
+                    'categories': {},
+                    'priority_levels': {'high': 0, 'medium': 0, 'low': 0}
+                }
+        
+        def get_recent_activity():
+            """Get recent activity summary"""
+            try:
+                # Get priority words
+                priority_words = priority_manager.get_priority_list(limit=100)
+                
+                if not priority_words:
+                    return {
+                        'summary': "まだ分析データがありません",
+                        'top_words': "分析を実行してください",
+                        'recent_words': "分析を実行してください"
+                    }
+                
+                # Create summary
+                total_words = len(priority_words)
+                avg_priority = sum(w.learning_priority for w in priority_words) / total_words if total_words > 0 else 0
+                
+                summary = f"学習対象: {total_words:,}語 | 平均優先度: {avg_priority:.1f}"
+                
+                # Top words by frequency
+                top_words = sorted(priority_words, key=lambda w: w.frequency, reverse=True)[:5]
+                top_words_str = ""
+                for i, word in enumerate(top_words, 1):
+                    top_words_str += f"{i}. {word.content} ({word.frequency}回) - {word.translation}\\n"
+                
+                # Recent words (highest priority)
+                recent_words = sorted(priority_words, key=lambda w: w.learning_priority, reverse=True)[:5]
+                recent_words_str = ""
+                for i, word in enumerate(recent_words, 1):
+                    recent_words_str += f"{i}. {word.content} (優先度: {word.learning_priority:.1f}) - {word.translation}\\n"
+                
+                return {
+                    'summary': summary,
+                    'top_words': top_words_str,
+                    'recent_words': recent_words_str
+                }
+                
+            except Exception as e:
+                print(f"Error getting recent activity: {e}")
+                return {
+                    'summary': f"エラー: {str(e)}",
+                    'top_words': "データ取得エラー",
+                    'recent_words': "データ取得エラー"
+                }
+        
+        def export_progress_report():
+            """Export progress report to CSV"""
+            try:
+                from datetime import datetime
+                import csv
+                
+                # Get all data
+                words = db.get_all_words(limit=None)
+                priority_words = priority_manager.get_priority_list(limit=None)
+                
+                # Create report
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                report_path = Path(__file__).parent / f"progress_report_{timestamp}.csv"
+                
+                with open(report_path, 'w', newline='', encoding='utf-8-sig') as csvfile:
+                    writer = csv.writer(csvfile)
+                    
+                    # Header
+                    writer.writerow(['インドネシア語', '日本語', '備考', '頻度', '優先度', '難易度', 'カテゴリ'])
+                    
+                    # Data
+                    for word in words:
+                        writer.writerow([
+                            word.indonesian,
+                            word.japanese,
+                            getattr(word, 'notes', ''),
+                            word.frequency,
+                            f"{word.priority:.2f}",
+                            word.difficulty,
+                            word.category.value if hasattr(word.category, 'value') else str(word.category)
+                        ])
+                
+                print(f"✅ Progress report exported: {report_path}")
+                return True
+                
+            except Exception as e:
+                print(f"❌ Export error: {e}")
+                return False
+        
+        # Auto-load stats on tab creation
+        load_stats()
+        
         return ft.Column([
             ft.Text("進捗管理", size=24, weight=ft.FontWeight.BOLD),
-            ft.Text("学習状況の可視化", size=14, color=ft.colors.GREY_600),
+            ft.Text("学習状況の詳細分析と可視化", size=14, color=ft.colors.GREY_600),
             ft.Divider(),
-            ft.ElevatedButton(
-                "統計情報を更新",
-                icon=ft.icons.REFRESH,
-                on_click=lambda e: load_stats()
-            ),
-            ft.Container(height=10),
+            
+            # Action buttons
+            ft.Row([
+                ft.ElevatedButton(
+                    "統計更新",
+                    icon=ft.icons.REFRESH,
+                    on_click=lambda e: load_stats(),
+                    bgcolor=ft.colors.BLUE,
+                    color=ft.colors.WHITE
+                ),
+                ft.ElevatedButton(
+                    "レポート出力",
+                    icon=ft.icons.DOWNLOAD,
+                    on_click=lambda e: export_progress_report(),
+                    bgcolor=ft.colors.GREEN,
+                    color=ft.colors.WHITE
+                )
+            ], spacing=10),
+            
+            ft.Container(height=15),
+            
+            # Stats in three columns
+            ft.Row([
+                # Column 1: Basic stats
+                ft.Container(
+                    content=ft.Column([
+                        ft.Container(
+                            content=stats_text,
+                            padding=15,
+                            border=ft.border.all(1, ft.colors.BLUE_200),
+                            border_radius=10,
+                            bgcolor=ft.colors.BLUE_50
+                        )
+                    ]),
+                    expand=True
+                ),
+                
+                ft.Container(width=10),
+                
+                # Column 2: Word analysis
+                ft.Container(
+                    content=ft.Column([
+                        ft.Container(
+                            content=word_stats_text,
+                            padding=15,
+                            border=ft.border.all(1, ft.colors.GREEN_200),
+                            border_radius=10,
+                            bgcolor=ft.colors.GREEN_50
+                        )
+                    ]),
+                    expand=True
+                ),
+                
+                ft.Container(width=10),
+                
+                # Column 3: Recent activity
+                ft.Container(
+                    content=ft.Column([
+                        ft.Container(
+                            content=recent_activity_text,
+                            padding=15,
+                            border=ft.border.all(1, ft.colors.ORANGE_200),
+                            border_radius=10,
+                            bgcolor=ft.colors.ORANGE_50
+                        )
+                    ]),
+                    expand=True
+                )
+            ], spacing=0),
+            
+            ft.Container(height=15),
+            
+            # Tips
             ft.Container(
-                content=stats_text,
-                padding=20,
+                content=ft.Column([
+                    ft.Text("💡 学習のコツ", size=16, weight=ft.FontWeight.BOLD),
+                    ft.Text("• 高優先度の単語を重点的に学習しましょう", size=14),
+                    ft.Text("• フラッシュカードで定期的に復習しましょう", size=14),
+                    ft.Text("• テストで理解度を確認しましょう", size=14),
+                    ft.Text("• 備考欄に覚えるコツを書き留めましょう", size=14)
+                ]),
+                padding=15,
                 border=ft.border.all(1, ft.colors.GREY_300),
-                border_radius=5
+                border_radius=10,
+                bgcolor=ft.colors.GREY_50
             )
-        ])
+        ], scroll=ft.ScrollMode.AUTO)
     
     # Tab 5: Settings
     def create_settings_tab():
