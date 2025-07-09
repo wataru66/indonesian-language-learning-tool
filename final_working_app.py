@@ -1022,11 +1022,11 @@ def final_working_app(page: ft.Page):
         # UI elements
         question_display = ft.Container(
             width=600,
-            height=200,
+            height=150,  # 高さを減らす
             bgcolor=ft.colors.WHITE,
             border=ft.border.all(2, ft.colors.BLUE_200),
             border_radius=10,
-            padding=30,
+            padding=20,
             alignment=ft.alignment.center
         )
         
@@ -1096,10 +1096,9 @@ def final_working_app(page: ft.Page):
                 # Show Japanese, ask for Indonesian
                 question_display.content = ft.Column([
                     ft.Text("次の日本語をインドネシア語で入力してください", size=14, color=ft.colors.GREY_600),
-                    ft.Container(height=20),
-                    ft.Text(word.translation, size=28, weight=ft.FontWeight.BOLD, 
-                           text_align=ft.TextAlign.CENTER, color=ft.colors.BLUE_800),
                     ft.Container(height=10),
+                    ft.Text(word.translation, size=26, weight=ft.FontWeight.BOLD, 
+                           text_align=ft.TextAlign.CENTER, color=ft.colors.BLUE_800),
                     ft.Text(f"問題 {current_question + 1} / {len(test_words)}", 
                            size=12, color=ft.colors.GREY_500)
                 ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
@@ -1122,10 +1121,9 @@ def final_working_app(page: ft.Page):
                 
                 question_display.content = ft.Column([
                     ft.Text("次のインドネシア語の意味を選択してください", size=14, color=ft.colors.GREY_600),
-                    ft.Container(height=20),
-                    ft.Text(word.content, size=28, weight=ft.FontWeight.BOLD, 
-                           text_align=ft.TextAlign.CENTER, color=ft.colors.BLUE_800),
                     ft.Container(height=10),
+                    ft.Text(word.content, size=26, weight=ft.FontWeight.BOLD, 
+                           text_align=ft.TextAlign.CENTER, color=ft.colors.BLUE_800),
                     ft.Text(f"問題 {current_question + 1} / {len(test_words)}", 
                            size=12, color=ft.colors.GREY_500)
                 ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
@@ -1356,18 +1354,16 @@ def final_working_app(page: ft.Page):
                 alignment=ft.alignment.center
             ),
             
-            ft.Container(height=15),
+            ft.Container(height=10),
             
-            # Answer input (typing)
+            # Answer input and submit button in a row (typing)
             ft.Container(
-                content=answer_input,
-                alignment=ft.alignment.center
-            ),
-            
-            # Submit button (typing)
-            ft.Container(
-                content=submit_button,
-                alignment=ft.alignment.center
+                content=ft.Row([
+                    answer_input,
+                    submit_button
+                ], alignment=ft.MainAxisAlignment.CENTER, spacing=10),
+                alignment=ft.alignment.center,
+                padding=10
             ),
             
             # Choice buttons (multiple choice)
